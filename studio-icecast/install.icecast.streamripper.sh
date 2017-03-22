@@ -3,6 +3,8 @@
 # Installs icecast2 and streamripper on Ubuntu Linux 16.04 64bit
 # (from deb packages)
 #
+# Usage: Edit the passwords below, as desired, before running this script.
+#
 # AD 2017-0321-2115
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
