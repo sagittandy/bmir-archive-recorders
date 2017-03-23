@@ -4,6 +4,10 @@ This project contains the scripts to install and configure several different int
 
 Several tools and techniques have been used to record the archives over the years.  As they have grown more diverse and complicated, his github project was created to store and share the scripts.
 
+
+![Image of BMIR](https://raw.githubusercontent.com/sagittandy/bmir-archive-recorders/master/pix/bmir.archivers.2017.png)
+
+
 ## Studio Icecast
 
 This directory contains scripts to install and configure an Icecast Server and Streamripper listener on Ubuntu 16.04.
