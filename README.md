@@ -8,7 +8,7 @@ Several tools and techniques have been used to record the archives over the year
 ![Image of BMIR](https://raw.githubusercontent.com/sagittandy/bmir-archive-recorders/master/pix/bmir.archivers.2017.png)
 
 
-## Studio Icecast
+## Studio Icecast + Streamripper
 
 This directory contains scripts to install and configure an Icecast Server and Streamripper listener on Ubuntu 16.04.
 
