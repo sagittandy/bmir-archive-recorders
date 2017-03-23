@@ -16,7 +16,7 @@ This technique is new and experimental at Burning Man 2017.
 
 ## Studio TotalRecorder
 
-A Behringer UMC204HD Audio Interface in the stuio digitizes baseband audio from the studio mixer and transfers it via USB cable to an HP desktop computer in the studio.  The computer runs Windows 7 and commercial audio recorder software TotalRecorder.  http://www.totalrecorder.com/  TotalRecorder is configured to repeatedly record audio to mp3 files in 2-hour segments, synchronized with clock time.  MP3 files are manually copied to USB thumb drive daily, to provide backups.  Note:  This computer does not have antivirus software installed and is intentionally never connected to the internet.  TotalRecorder was first used in 2016.
+A Behringer UMC204HD Audio Interface in the studio digitizes baseband audio from the studio mixer and transfers it via USB cable to an HP desktop computer in the studio.  The computer runs Windows 7 and commercial audio recorder software TotalRecorder.  http://www.totalrecorder.com/  TotalRecorder is configured to repeatedly record audio to mp3 files in 2-hour segments, synchronized with clock time.  MP3 files are manually copied to USB thumb drive daily, to provide backups.  Note:  This computer does not have antivirus software installed and is intentionally never connected to the internet.  TotalRecorder was first used in 2016.
 
 ## Android FM Recorder
 
