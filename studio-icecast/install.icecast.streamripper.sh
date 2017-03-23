@@ -5,7 +5,7 @@
 #
 # Usage: Edit the passwords below, as desired, before running this script.
 #
-# AD 2017-0321-2115
+# AD 2017-0321-2115  Copyright BMIR 2017
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
 
