@@ -253,12 +253,37 @@ fi
 
 echo ${DELIMITER}
 echo "Verify we can fetch statistics from the icecast server."
-curl http://admin:${ICECAST_ADMIN_PASSWORD}@localhost:8000/admin/stats
+curl http://admin:${ICECAST_ADMIN_PASSWORD}@localhost:${ICECAST_PORT}/admin/stats
 rc=$?
 if [ 0 != ${rc} ] ; then
     echo "ERROR ${rc} verifying we can fetch statistics from the icecast server."
 	exit 1
 fi
+
+
+#------- for test purposes --------
+
+
+echo ${DELIMITER}
+echo "Installing liquidsoap streaming client."
+apt-get -y install liquidsoap
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} apt-get -y install liquidsoap streaming client."
+	exit 1
+fi
+
+
+echo ${DELIMITER}
+echo "Starting liquidsoap streaming client."
+liquidsoap 'output.icecast(%mp3, host = "localhost", port = ${ICECAST_PORT}, password = "${ICECAST_SOURCE_PASSWORD}", mount = "testclips", mksafe(playlist("/tmp/testclips.m3u")))'
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} starting liquidsoap streaming client."
+	exit 1
+fi
+
+
 
 
 echo ${DELIMITER}
