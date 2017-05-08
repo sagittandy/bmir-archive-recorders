@@ -5,6 +5,8 @@
 #
 # Usage: Edit the passwords below, as desired, before running this script.
 #
+# Prereq: Move the mp3 files enclosed to /tmp/mp3
+# 
 # AD 2017-0321-2115  Copyright BMIR 2017
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
@@ -20,6 +22,16 @@ export ICECAST_SOURCE_PASSWORD="sourcepw"
 export ICECAST_ADMIN_PASSWORD="adminpw"
 ### export ICECAST_USER_NAME="icecastuser"
 ### export ICECAST_USER_PASSWORD="userpw"
+export MP3_DIR="/tmp/mp3"
+
+
+echo ${DELIMITER}
+ls ${MP3_DIR}
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} MP3 file directory does not exist: ${MP3_DIR}"
+        exit 1
+fi
 
 
 echo ${DELIMITER}
