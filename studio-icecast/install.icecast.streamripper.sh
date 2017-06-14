@@ -288,7 +288,7 @@ fi
 
 echo ${DELIMITER}
 echo "Starting liquidsoap streaming client."
-liquidsoap 'output.icecast(%mp3, host = "localhost", port = ${ICECAST_PORT}, password = "${ICECAST_SOURCE_PASSWORD}", mount = "testclips", mksafe(playlist("/tmp/testclips.m3u")))'
+liquidsoap "output.icecast(%mp3, host=\"localhost\", port=$ICECAST_PORT, password=\"$ICECAST_SOURCE_PASSWORD\", mount=\"testclips\", mksafe(playlist(\"$MP3_DIR/testclips.m3u\")))"
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} starting liquidsoap streaming client."
