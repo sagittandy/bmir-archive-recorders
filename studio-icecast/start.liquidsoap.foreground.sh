@@ -6,10 +6,9 @@
 #
 #	Run in foreground:  ./start.liquidsoap.sh
 #	Run in background:  nohup ./start.liquidsoap.sh &
-##
+#
 # AD 2017-0610  Copyright BMIR 2017
-##-----------------------------------------------------------------------
-export DELIMITER="-----------------------------------------------------"
+#-----------------------------------------------------------------------
 
 # Define custom values for Icecast config file.
 export ICECAST_PORT=8000
