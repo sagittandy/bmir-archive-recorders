@@ -5,7 +5,7 @@
 #
 # Usage: 
 #	Run this script as root: sudo ./install.icecast.streamripper.sh
-#	Optional: Chabge the default passwords below.
+#	Optional: Change the default passwords below.
 #
 # Prereq: Move the mp3 files enclosed to /tmp/mp3
 # 
