@@ -3,7 +3,9 @@
 # Installs icecast2 and streamripper on Ubuntu Linux 16.04 64bit
 # (from deb packages)
 #
-# Usage: Edit the passwords below, as desired, before running this script.
+# Usage: 
+#	Run this script as root: sudo ./install.icecast.streamripper.sh
+#	Optional: Chabge the default passwords below.
 #
 # Prereq: Move the mp3 files enclosed to /tmp/mp3
 # 
@@ -284,18 +286,6 @@ if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} apt-get -y install liquidsoap streaming client."
 	exit 1
 fi
-
-
-echo ${DELIMITER}
-echo "Starting liquidsoap streaming client."
-liquidsoap "output.icecast(%mp3, host=\"localhost\", port=$ICECAST_PORT, password=\"$ICECAST_SOURCE_PASSWORD\", mount=\"testclips\", mksafe(playlist(\"$MP3_DIR/testclips.m3u\")))"
-rc=$?
-if [ 0 != ${rc} ] ; then
-	echo "ERROR ${rc} starting liquidsoap streaming client."
-	exit 1
-fi
-
-
 
 
 echo ${DELIMITER}

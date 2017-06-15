@@ -1,5 +1,14 @@
 #!/bin/bash
-
+#-----------------------------------------------------------------------
+# Starts liquidsoap, which uploads mp3 files to icecast2.
+#
+# Usage: Run this as a non-root user.
+#
+#	Run in foreground:  ./start.liquidsoap.sh
+#	Run in background:  nohup ./start.liquidsoap.sh &
+##
+# AD 2017-0610  Copyright BMIR 2017
+##-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
 
 # Define custom values for Icecast config file.
