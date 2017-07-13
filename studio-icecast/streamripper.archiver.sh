@@ -10,6 +10,12 @@
 # Originally written for KRUI (http://www.krui.fm), but adaptable anywhere.
 # Ripping engine powered by streamripper, written by Greg Sharp (gregsharp@users.sourceforge.net).
 # Modified for use by BMIR by Andy 2017-0610
+#
+# Usage: Run this as a non-root user.
+#
+#	Run in foreground:  ./streamripper.archiver.sh
+#	Run in background:  nohup ./streamripper.archiver.sh &
+#
 ###
 PREFIX=BMIR
 RADIOSTREAM=http://localhost:8000/bmir
