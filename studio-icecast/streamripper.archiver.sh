@@ -12,8 +12,10 @@
 # Modified for use by BMIR by Andy 2017-0610
 ###
 PREFIX=BMIR
-RADIOSTREAM=http://localhost:8000/testclips
-DEST_PATH=/tmp/mp3/streamripper
+RADIOSTREAM=http://localhost:8000/bmir
+### DEST_PATH=/tmp/mp3/streamripper
+DEST_PATH=/home/ding/bmir2017
+
 while [ 1 -le 2 ]
 do
 
