@@ -40,6 +40,12 @@ do
 	currentSeconds=$(date "+%S") #unadjusted with leading zero.
 	currentMinutes=$(date "+%M")
 	currentHour=$(date "+%H")
+
+	echo "currenntMinutes=$currentMinutes"
+	echo "currentSecods=$currentSeconds"
+	echo "currentHour=$currentHour"
+
+	# Strip leading zero
 	if [ $currentSeconds -eq 0 ]
 	then
 	    currentSeconds=0 #Set the date to zero to avoid issues with cutting "00" by zero
@@ -47,6 +53,22 @@ do
 	then
 		currentSeconds=$(date "+%S" | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
 	fi
+
+	# Strip leading zero
+ 	if [ $currentMinutes -eq 0 ]
+	then
+		echo "===A==="
+		currentMinutes=0 #Set the date to zero to avoid issues with cutting "00" by zero
+	elif [ $currentMinutes -lt 10 ]
+	then
+		echo "===B==="
+		currentMinutes=$(echo $currentMinutes | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
+	fi
+
+	echo "currenntMinutes=$currentMinutes"
+	echo "currentSecods=$currentSeconds"
+	echo "currentHour=$currentHour"
+
 	adjSecondsTotal=$(($(($currentMinutes*60)) + $currentSeconds))
 	oddEven=$(($currentHour%2))
 	if [ $oddEven -eq 0 ]
