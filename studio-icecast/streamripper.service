@@ -1,0 +1,40 @@
+# Service file for streamripper
+#
+# Prereq
+#
+# Setup
+#     Place this file here: /etc/systemd/system/streamripper.service
+#     Ensure permissions 644:  -rw-r--r-- 1 root root
+#     Enable
+#          systemctl enable streamripper.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep streamripper
+#     Logs
+#         /var/log/syslog
+#
+# AD 2017-0806-1715
+[Unit]
+Description=Streamripper service
+After=network.target icecast.service
+
+[Service]
+Type=simple
+ExecStart=/home/ding/sde/bmir-archive-recorders/studio-icecast/streamripper.archiver.sh
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user ding
+User=ding
+Group=ding
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=streamripperbmir
+#Environment=NODE_ENV=production PORT=1337
+# Required on some systems
+#WorkingDirectory=/opt/nodeserver
+
+[Install]
+WantedBy=multi-user.target

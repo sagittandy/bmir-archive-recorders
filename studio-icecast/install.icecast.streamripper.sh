@@ -24,7 +24,7 @@ export ICECAST_SOURCE_PASSWORD="sourcepw"
 export ICECAST_ADMIN_PASSWORD="adminpw"
 ### export ICECAST_USER_NAME="icecastuser"
 ### export ICECAST_USER_PASSWORD="userpw"
-export MP3_DIR="/tmp/mp3"
+export MP3_DIR="/home/ding/bmir2017"
 
 
 echo ${DELIMITER}
@@ -152,6 +152,10 @@ if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${ICECAST_CONFIG_FILE} does not exist."
 	exit 1
 fi
+
+#Make a backup
+echo "Making backup of icecast config file."
+cp -p ${ICECAST_CONFIG_FILE} /tmp/icecast.config.file.orig.xml
 
 
 # Todo someday: Create a function to do this, and add better checking.

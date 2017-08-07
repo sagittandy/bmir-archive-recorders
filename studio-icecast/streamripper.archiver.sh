@@ -39,38 +39,51 @@ do
 	# Time algorithm used to calculate the length of the recording.
 	currentSeconds=$(date "+%S") #unadjusted with leading zero.
 	currentMinutes=$(date "+%M")
-	currentHour=$(date "+%H")
+	currentHours=$(date "+%H")
 
-	echo "currenntMinutes=$currentMinutes"
-	echo "currentSecods=$currentSeconds"
-	echo "currentHour=$currentHour"
+	echo "currentMinutes=$currentMinutes"
+	echo "currentSeconds=$currentSeconds"
+	echo "currentHours=$currentHours"
 
 	# Strip leading zero
 	if [ $currentSeconds -eq 0 ]
 	then
-	    currentSeconds=0 #Set the date to zero to avoid issues with cutting "00" by zero
+	    echo "===A==="
+	    currentSeconds=0 #Set to zero to avoid issues with cutting "00" by zero
 	elif [ $currentSeconds -lt 10 ]
 	then
-		currentSeconds=$(date "+%S" | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
+	    echo "===B==="
+	    currentSeconds=$(date "+%S" | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
 	fi
 
 	# Strip leading zero
  	if [ $currentMinutes -eq 0 ]
 	then
-		echo "===A==="
-		currentMinutes=0 #Set the date to zero to avoid issues with cutting "00" by zero
+		echo "===C==="
+		currentMinutes=0 #Set to zero to avoid issues with cutting "00" by zero
 	elif [ $currentMinutes -lt 10 ]
 	then
-		echo "===B==="
+		echo "===D==="
 		currentMinutes=$(echo $currentMinutes | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
 	fi
 
-	echo "currenntMinutes=$currentMinutes"
-	echo "currentSecods=$currentSeconds"
-	echo "currentHour=$currentHour"
+	# Strip leading zero
+ 	if [ $currentHours -eq 0 ]
+	then
+		echo "===E==="
+		currentHours=0 #Set to zero to avoid issues with cutting "00" by zero
+	elif [ $currentHours -lt 10 ]
+	then
+		echo "===F==="
+		currentHours=$(echo $currentHours | cut -f 2 -d '0') #Cut the leading zero off of the field if it exists
+	fi
+
+	echo "currentMinutes=$currentMinutes"
+	echo "currentSeconds=$currentSeconds"
+	echo "currentHours=$currentHours"
 
 	adjSecondsTotal=$(($(($currentMinutes*60)) + $currentSeconds))
-	oddEven=$(($currentHour%2))
+	oddEven=$(($currentHours%2))
 	if [ $oddEven -eq 0 ]
 	then
 		durationSecs=7200
@@ -91,7 +104,8 @@ do
 
 	# Check that functioning copy of streamripper is available for use
 	echo -n "> Checking for streamripper..."
-	/usr/bin/streamripper -v > /dev/null 2>> error.log
+	#/usr/bin/streamripper -v > /dev/null 2>> error.log
+	which streamripper
 	if [ $? == 0 ]
 	then
 		echo "OK!"

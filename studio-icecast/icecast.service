@@ -1,0 +1,43 @@
+# Service file for icecast2
+#
+# Prereq
+#     Make the icecast config file readable by user nobody:
+#         chmod 666 /etc/icecast2/icecast.xml  -rw-rw-rw- 1 icecast2 icecast
+#
+# Setup
+#     Place this file here: /etc/systemd/system/icecast.service
+#     Ensure permissions 644:  -rw-r--r-- 1 root root
+#     Enable
+#          systemctl enable icecast.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep icecast
+#         netstat -na | grep LIST | grep 80
+#     Logs
+#         /var/log/syslog
+#
+# AD 2017-0805-1600
+[Unit]
+Description=Icecast2 service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/icecast2 -c /etc/icecast2/icecast.xml
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user nobody
+User=nobody
+Group=nogroup
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=icecastbmir
+#Environment=NODE_ENV=production PORT=1337
+# Required on some systems
+#WorkingDirectory=/opt/nodeserver
+
+[Install]
+WantedBy=multi-user.target

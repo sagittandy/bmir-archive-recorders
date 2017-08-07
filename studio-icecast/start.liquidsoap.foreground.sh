@@ -16,7 +16,7 @@ export ICECAST_SOURCE_PASSWORD="sourcepw"
 export MP3_DIR="/tmp/mp3"
 
 # Start liquidsoap in the foreground.
-liquidsoap "output.icecast(%mp3, host=\"localhost\", port=$ICECAST_PORT, password=\"$ICECAST_SOURCE_PASSWORD\", mount=\"testclips\", mksafe(playlist(\"$MP3_DIR/testclips.m3u\")))"
+liquidsoap "output.icecast(%mp3, host=\"localhost\", port=$ICECAST_PORT, password=\"$ICECAST_SOURCE_PASSWORD\", mount=\"bmir\", mksafe(playlist(\"$MP3_DIR/testclips.m3u\")))"
 
 
 
