@@ -1,0 +1,30 @@
+#-----------------------------------------------------------------------
+# This systemd/systemctl script establishes an SSH Tunnel 
+# from the BMIR archive machine in the BMIR studio to
+# my server in the public internet at Digital Ocean (dobmir).
+#
+# Reference: https://www.everythingcli.org/ssh-tunnelling-for-fun-and-profit-autossh/
+#
+# Prereq: Ensure dobmir is defined in /etc/hosts
+#
+# AD 2018-0723-1655
+#-----------------------------------------------------------------------
+[Unit]
+Description=AutoSSH tunnel service
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "ExitOnForwardFailure=yes" -NR 10022:localhost:22 ding@dobmir
+
+# Run as user ding
+User=ding
+Group=ding
+
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=autosshsvc
+
+[Install]
+WantedBy=multi-user.target

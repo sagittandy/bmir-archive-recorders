@@ -11,16 +11,35 @@
 # Ripping engine powered by streamripper, written by Greg Sharp (gregsharp@users.sourceforge.net).
 # Modified for use by BMIR by Andy 2017-0610
 #
-# Usage: Run this as a non-root user.
+# Usage preferred: Run this from systemd/systemctl
+#
+# Usage interactive: Run this as a non-root user.
 #
 #	Run in foreground:  ./streamripper.archiver.sh
 #	Run in background:  nohup ./streamripper.archiver.sh &
 #
+# AD 2018-0725-0347
 ###
-PREFIX=BMIR
+PREFIX=bmir
 RADIOSTREAM=http://localhost:8000/bmir
 ### DEST_PATH=/tmp/mp3/streamripper
-DEST_PATH=/home/ding/bmir2017
+DEST_PATH=/home/ding/bmir2018
+ERR_LOG=$DEST_PATH/error.log
+echo "ERR_LOG=$ERR_LOG"
+
+update_timestamp()
+{
+	# Get hundredths of seconds from the first 2 digits of nanoseconds.
+	### NANO_SECONDS=`date +%N`
+	### CENTI_SECONDS="${NANO_SECONDS:0:2}"
+
+	# Format time as year - month date - hour minute - seconds centiseconds
+	DATE_NOW="`date +%Y-%m%d-%H%M`"     ### -%S`${CENTI_SECONDS}"
+
+	echo "DATE_NOW=${DATE_NOW}"
+}
+
+
 
 while [ 1 -le 2 ]
 do
@@ -30,9 +49,14 @@ do
 	#These are editable, but will eventually be configured through the main interface.
 	##
 	prefix=${PREFIX} #Prefix used when naming files.
-	stamp=$(date "+%p" | tr '[:upper:]' '[:lower:]') # Yes, this is required because the BSD date won't give you a lowercame am/pm.
+	### stamp=$(date "+%p" | tr '[:upper:]' '[:lower:]') # Yes, this is required because the BSD date won't give you a lowercame am/pm.
 	radiostream=${RADIOSTREAM}  # "http://krui.student-services.uiowa.edu:8000/listen.m3u" #Webstream to rip audio from.
-	filename="$prefix--$(date "+%I-%M-%S").$stamp" #Name of outputted file.
+	### filename="$prefix--$(date "+%I-%M-%S").$stamp" #Name of outputted file.
+
+	update_timestamp
+	filename="$prefix.${DATE_NOW}" #Name of outputted file.
+	echo "filename=$filename"
+
 	dest_path=${DEST_PATH}  # "/Users/tony/development/scripts/archives" #Absolute path for recordings. No trailing slash!
 	audio_sizecap=300000 #Size cap of audio storage path in megabytes. As the size approaches the cap, emails will be sent.
 
@@ -96,7 +120,7 @@ do
 	riptime=$adjSecondsRemaining
 
 	#logging statement
-	echo "# Archiver starting: ($(date "+%m-%d-%y") at $(date "+%I:%M:%S%p"))" >> error.log
+	echo "# Archiver starting: ($(date "+%m-%d-%y") at $(date "+%I:%M:%S%p"))" >> $ERR_LOG
 
 	echo "---------------------------------"
 	echo "-         KRUI Archiver         -"
@@ -104,7 +128,7 @@ do
 
 	# Check that functioning copy of streamripper is available for use
 	echo -n "> Checking for streamripper..."
-	#/usr/bin/streamripper -v > /dev/null 2>> error.log
+	#/usr/bin/streamripper -v > /dev/null 2>> $ERR_LOG
 	which streamripper
 	if [ $? == 0 ]
 	then
@@ -116,8 +140,8 @@ do
 
 	# Ensure we have internet access.
 	echo -n "> Checking for an internet connection..."
-	### ping -c 1 www.google.com > /dev/null 2>> error.log
-	ping -c 1 localhost > /dev/null 2>> error.log
+	### ping -c 1 www.google.com > /dev/null 2>> $ERR_LOG
+	ping -c 1 localhost > /dev/null 2>> $ERR_LOG
 	if [ "$?" == 0 ]
 	then
 		echo "OK!"
@@ -131,7 +155,7 @@ do
 	then
 		echo "OK!"
 	else
-		echo "** FATAL ERROR: $dest_path is not accessible! Ensure the directory exists and is writable by this application, then restart." | tee -a error.log
+		echo "** FATAL ERROR: $dest_path is not accessible! Ensure the directory exists and is writable by this application, then restart." | tee -a $ERR_LOG
 		exit 1
 	fi
 
@@ -144,26 +168,29 @@ do
 
 	# Ensure a folder to store the ripped file exists before moving on...
 	echo -n "> Checking for folder in $dest_path for today's date..."
-	fullpath=$dest_path/$(date "+%m-%d-%y")/
-	result=$(ls $dest_path|grep $(date "+%m-%d-%y"))
+	### fullpath=$dest_path/$(date "+%m-%d-%y")/
+	### result=$(ls $dest_path|grep $(date "+%m-%d-%y"))
+
+	fullpath=$dest_path/$(date "+%m%d")/
+	result=$(ls $dest_path|grep $(date "+%m%d"))
 
 	if test -z $result
 	then
 		printf "\n* $fullpath does not exist! Creating...\n"
-		mkdir $fullpath 2>> error.log
+		mkdir $fullpath 2>> $ERR_LOG
 		if [ $? != 0 ]
 		then
-			printf "** FATAL ERROR: Could not create $fullpath. Check permissions and try again.\n"| tee -a error.log
+			printf "** FATAL ERROR: Could not create $fullpath. Check permissions and try again.\n"| tee -a $ERR_LOG
 			exit 1
 		fi
-	else
+	else	
 		echo "OK!"
 	fi
 
 	echo -n "> Checking size of storage directory..."
 	if [ $current_size -ge $audio_sizecap  ]
 	then
-		printf "\n* FATAL ERROR: Audio size cap reached! The application cannot continue.\n" | tee -a error.log
+		printf "\n* FATAL ERROR: Audio size cap reached! The application cannot continue.\n" | tee -a $ERR_LOG
 		exit 1
 
 	elif [ $current_size -ge $warn_size ]
@@ -183,8 +210,15 @@ do
 	printf "> Appending stop time to ripped file... \n"
 	cd $fullpath
 	base=$(basename $filename .mp3)
-	newfilename=$base-$(date "+%I-%M-%S").$stamp.mp3
-	mv $base.mp3 $newfilename 2>> ../error.log
+	### newfilename=$base-$(date "+%I-%M-%S").$stamp.mp3
+
+	update_timestamp
+	newfilename="$base.${DATE_NOW}.mp3" #Name of outputted file.
+	echo "newfilename=$newfilename"
+
+
+
+	mv $base.mp3 $newfilename 2>> $ERR_LOG
 	if [ "$?" == 0 ]
 	then
 		echo "OK! ($newfilename)"
@@ -192,8 +226,8 @@ do
 		echo "* WARNING: Could not rename file."
 	fi
 	printf "> Cleaning up cuesheets...\n"
-	rm *.cue > /dev/null 2>> ../error.log
+	rm *.cue > /dev/null 2>> $ERR_LOG
 	cd ..
 	echo "OK!"
-	echo "# Archiver shutting down: ($(date "+%m-%d-%y") at $(date "+%I:%M:%S%p"))" >> error.log
+	echo "# Archiver shutting down: ($(date "+%m-%d-%y") at $(date "+%I:%M:%S%p"))" >> $ERR_LOG
 done

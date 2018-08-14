@@ -9,7 +9,7 @@
 #
 # Prereq: Move the mp3 files enclosed to /tmp/mp3
 # 
-# AD 2017-0321-2115  Copyright BMIR 2017
+# AD 2017-0321-2115  Copyright BMIR 2017, 2018
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
 
@@ -24,7 +24,7 @@ export ICECAST_SOURCE_PASSWORD="sourcepw"
 export ICECAST_ADMIN_PASSWORD="adminpw"
 ### export ICECAST_USER_NAME="icecastuser"
 ### export ICECAST_USER_PASSWORD="userpw"
-export MP3_DIR="/home/ding/bmir2017"
+export MP3_DIR="/home/ding/bmir2018"
 
 
 echo ${DELIMITER}
