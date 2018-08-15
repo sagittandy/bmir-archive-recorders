@@ -16,7 +16,7 @@
 # AD 2017-0806-1715
 [Unit]
 Description=Streamripper service
-After=network.target icecast.service
+After=icecast.service
 
 [Service]
 Type=simple
