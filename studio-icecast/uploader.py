@@ -141,8 +141,7 @@ def upload_file(username, hostname, fully_qualified_local_filename, fully_qualif
 	if 0 == exitcode:
 		sop(3,m,'Exit. Uploaded %s to %s' % (fully_qualified_local_filename, target))
 	else:
-		sop(0,m,'EXIT/ERROR: Directory not created. Returning ' + exitcode)
-
+		sop(0,m,'EXIT/ERROR: File not uploaded: %s. Returning %s' % (fully_qualified_local_filename, exitcode))
 
 	return exitcode
 
