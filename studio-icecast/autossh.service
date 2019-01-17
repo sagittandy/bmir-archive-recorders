@@ -5,7 +5,36 @@
 #
 # Reference: https://www.everythingcli.org/ssh-tunnelling-for-fun-and-profit-autossh/
 #
-# Prereq: Ensure dobmir is defined in /etc/hosts
+# Prereqs:
+#    - Ensure dobmir is defined in /etc/hosts
+#    - Ensure SSH KEY access from 'this' account to the server
+#
+# Setup as root to start on boot (on raspberry pi):
+#
+# As root, move autossh.service to /etc/systemd/system/
+# chmod 644 autossh.service
+# chown root autossh.service
+# chgrp root autossh.service
+#
+#    root@raspberrypi:~# systemctl start autossh.service
+
+#    root@raspberrypi:~# systemctl status autossh.service
+#    ● autossh.service - AutoSSH tunnel service
+#       Loaded: loaded (/etc/systemd/system/autossh.service; disabled; vendor preset: enabled)
+#       Active: active (running) since Thu 2019-01-17 13:39:03 EST; 6s ago
+#     Main PID: 943 (autossh)
+#       CGroup: /system.slice/autossh.service
+#               ├─943 /usr/lib/autossh/autossh -M 0 -o ServerAliveInterval 30 -o ServerAliveCountMax 3 -o ExitOnForwardFailure=yes -NR
+#               └─946 /usr/bin/ssh -o ServerAliveInterval 30 -o ServerAliveCountMax 3 -o ExitOnForwardFailure=yes -NR 10022:localhost:
+#    
+#    Jan 17 13:39:03 raspberrypi systemd[1]: Started AutoSSH tunnel service.
+#    Jan 17 13:39:03 raspberrypi autossh[943]: port set to 0, monitoring disabled
+#    Jan 17 13:39:03 raspberrypi autossh[943]: starting ssh (count 1)
+#    Jan 17 13:39:03 raspberrypi autossh[943]: ssh child pid is 946
+#
+#    root@raspberrypi:~# systemctl enable autossh.service
+#    Created symlink /etc/systemd/system/multi-user.target.wants/autossh.service → /etc/systemd/system/autossh.service.
+#
 #
 # AD 2018-0723-1655
 #-----------------------------------------------------------------------
