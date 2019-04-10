@@ -24,7 +24,7 @@ The RPI archiver is new and experimental at Burning Man 2019!!
 
 ## SSH tunnel for remote access
 
-For Burning Man 2018, scripts were developed to implement an SSH tunnel from a cloud server to the archiver machine in the studio.  This allowed the author to SSH into the machine after he left Burning Man early, and do any required mantainence remotely.
+For Burning Man 2018, scripts were developed to implement an SSH tunnel from a cloud server to the archiver machine in the studio.  This allowed the author to SSH into the machine after he left Burning Man early, and do any required mantainence remotely.  This feature uses package autossh to keep the tunnel running.
 
 This was first used at Burning Man 2018.
 
