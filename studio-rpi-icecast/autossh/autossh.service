@@ -1,0 +1,58 @@
+#-----------------------------------------------------------------------
+# Service file for autossh for RPI Raspbian Stretch Lite
+#
+# Purpose: This systemd/systemctl script establishes an SSH Tunnel 
+#     from the BMIR archive machine in the BMIR studio to
+#     my server in the public internet (dobmir).
+#
+#     Reference: 
+#         https://www.everythingcli.org/ssh-tunnelling-for-fun-and-profit-autossh/
+#
+# Prereqs:
+#    - Ensure hostname dobmir is defined in /etc/hosts
+#    - Ensure SSH KEY access is enabled from 'this' account to server dobmir
+#
+# Setup
+#     As root, place this file here: /etc/systemd/system/autossh.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable autossh.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep autossh
+#     Test from some laptop to dobmir to rpi
+#         ssh -p 10022 pi@dobmir
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status autossh.service
+#     systemctl start  autossh.service
+#     systemctl stop   autossh.service
+#
+# Disable from autostart
+#     systemctl disable autossh.service
+#
+# AD 2019-0407-2148 Updated for RPI
+# AD 2018-0723-1655 Copyright BMIR 2018,2019
+#-----------------------------------------------------------------------
+[Unit]
+Description=AutoSSH tunnel service
+After=network.target
+
+[Service]
+Environment="AUTOSSH_GATETIME=0"
+ExecStart=/usr/bin/autossh -M 0 -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -o "ExitOnForwardFailure=yes" -NR 10022:localhost:22 pi@dobmir
+
+# Run as user pi
+User=pi
+Group=pi
+
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=autosshsvc
+
+[Install]
+WantedBy=multi-user.target
+

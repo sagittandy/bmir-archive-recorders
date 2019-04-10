@@ -1,0 +1,48 @@
+#-----------------------------------------------------------------------
+# Service file for icecast2 for RPI Raspbian Stretch Lite
+#
+# Setup
+#     Place this file here: /etc/systemd/system/icecast.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable icecast.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep icecast
+#         netstat -na | grep LIST | grep 80
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status icecast.service
+#     systemctl start  icecast.service
+#     systemctl stop   icecast.service
+#
+# Disable from autostart
+#     systemctl disable icecast.service
+#
+# AD 2019-0408-1348 Updated for RPI
+# AD 2017-0805-1600 Copyright BMIR 2017,2019
+#-----------------------------------------------------------------------
+[Unit]
+Description=Icecast2 service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/icecast2 -c /etc/icecast2/icecast.xml
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user nobody
+User=nobody
+Group=nogroup
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=icecastbmir
+
+[Install]
+WantedBy=multi-user.target
+

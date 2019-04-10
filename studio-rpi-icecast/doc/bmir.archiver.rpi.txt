@@ -1,0 +1,218 @@
+--------------------------------------------
+Instructions for preparing a Raspberry Pi model 3
+with wired RJ45 internet and Wi-Fi
+using Raspbian Stretch Lite 
+
+AD 2019-0407
+--------------------------------------------
+
+Prereqs
+	Linux laptop
+		gparted
+		etcher-electron
+	SDCard-to-USB adapter
+
+Download latest raspbian lite zip file to linux laptop
+	From: https://www.raspberrypi.org/downloads/raspbian/
+	Example: 2018-11-13-raspbian-stretch-lite.zip
+
+	Do not unzip
+
+Prepare sdcard media on linux laptop
+	Obtain some media adapter for Micro SD cards
+		such as Sandisk ImageMate 5-in-1 reader
+	Insert Micro SD to the adapter, plug into laptop
+
+Use gparted to delete partitions
+	BE VERY CAREFUL NOT TO DELETE YOUR LAPTOP HARD DRIVES!!!
+	su - to root
+	gparted &
+	In the UI upper right, select the SD card.  
+		For example, /dev/sdb
+		Confirm expected total size of SD card (usually 32GB or less)
+	In the main panel, for each allocated partition:
+		Right-click-> Unmount (if mounted)
+		Right-click-> Delete
+	Repeat for all existing partitions
+	When all partitions are deleted, click Green Checkmark at top.
+	Confirm all SD card storage is now unallocated.
+	Exit gparted.
+	Exit root.
+
+Remove the SDCard adapter from your laptop
+	Wait 10 secs
+	Reconnect the SDCard adapter to your laptop
+
+Flash raspbian zip to SDCard using etcher-electron 
+	Ensure you are NOT root user
+	etcher-electron &
+	At left, click 'Select Image'
+		Navigate to Raspbian Lite zip file (do not unzip)
+	In center, ensure the autodetected storage device size is correct.
+	At right, click Flash
+		Enter laptop user password
+	Wait patiently for 100% completion
+
+Once again, remove the SDCard adapter from your laptop
+	Wait 10 secs
+	Reconnect the SDCard adapter to your laptop
+
+Confirm two new file systems are mounted to the laptop
+		ls /media/<user>/
+			/boot
+			/rootfs
+
+Optional:  Copy utilities, zips, and other personalization files
+	to the SDCard on your laptop for use in the RPi.
+
+	To enable SSH listener on the RPi, issue this as non-root:
+		touch /boot/ssh
+
+		Example: touch /media/USER/boot/ssh
+
+	FOR DEBUG ONLY, NOT FOR PRODUCTION...
+	To enable Wi-Fi password-protected access on the RPi, 
+	create and edit file
+		/boot/wpa_supplicant.conf
+	with these contents (or similar for your country, security type, etc)
+		country=US
+		ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+		update_config=1
+
+		network={
+		    ssid="YOUR_WIFI_NETWORK_NAME"
+		    scan_ssid=1
+		    psk="YOUR_WIFI_PASSWORD"
+		    key_mgmt=WPA-PSK
+		}
+
+	Example: cp -p ~/personal/dl/raspberry.pi/server-in-a-box/boot-dir/wpa_supplicant.conf  /media/USER/boot/
+
+	To enable password-free ssh from your laptop to RPI,
+	copy your authorized_keys file to /media/<user>/boot
+
+	To setup icecast2, streamripper, and all utility scripts,
+		Download to your laptop https://github.com/sagittandy/bmir-archive-recorders
+		Copy folder studio-rpi-icecast to /media/USER/boot/
+
+Your SDCard is now ready to unmount from the laptop
+	and install into a powered-off RPi.
+
+- - - - -
+Placed in Mod 3 rPI with wired ethernet.
+rPI booted slowly and established two enet connections (one wired and one wireless)
+
+ip -4 address show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    inet 192.168.10.114/24 brd 192.168.10.255 scope global eth0
+       valid_lft forever preferred_lft forever
+3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    inet 192.168.10.113/24 brd 192.168.10.255 scope global wlan0
+       valid_lft forever preferred_lft forever
+
+Confirm SSH works to both.
+
+- - - - -
+Changed pi password to <YOUR_PI_PASSWORD>
+Changed root password to <YOUR_ROOT_PASSWORD>
+
+apt-get update
+apt-get -y dist-upgrade
+shutdown -r now
+
+SSH in again.  Confirm no further OS updates.
+
+- - - - -
+apt-get -y install zip
+
+- - - - -
+SSH keys (on RPI) if you have a zip available from earlier RPIs...
+mkdir /home/pi/.ssh
+chmod 700 /home/pi/.ssh
+unzip the contents of dot.ssh.rpi.2019-0407-2335.zip in the .ssh folder
+
+### Move /boot/authorized_keys to /home/pi/.ssh/
+### cp authorized_keys /home/pi/.ssh/  
+
+SSH in again.  Confirm no password required.
+
+Otherwise, start from scratch:
+	ssh-keygen -t rsa
+	etc
+
+- - - - -
+Set timezone to US PACIFIC 
+	timedatectl set-timezone America/Los_Angeles
+
+- - - - -
+Edit /etc/hosts as root
+Set hostname + IP of target cloud server (for uploading MP3s)
+Example: 1.2.3.4 dobmir
+
+- - - - -
+For uploader and autossh
+	On cloud server dobmir,
+	create new user 'pi'
+		adduser pi
+			password: <YOUR_PASSWORD>
+	if you have a zip available from earlier RPIs...
+		unzip dot.ssh.rpi.2019-0407-2335.zip into a tmp folder
+		cp -p authorized_keys.pi.dingx to /home/pi/.ssh/authorized_keys
+		This authorized pi@rpi to ssh into pi@dobmir without password.
+	Otherwise, copy id_rsa.pub from the RPI .ssh/authorized_hosts folder.
+	Ensure you can sh from pi@rpi to pi@dobmir
+
+- - - - -
+Install and setup apps, according to instructions in each folder:
+	icecast2/
+	streamripper/
+	autossh/
+	uploader/
+
+- - - - -
+Set up UFW (Ubuntu Firewall)
+	ufw/
+
+- - - - -
+Monitor (uploads stats HTML file to cloud server every 2 mins)
+	monitor/
+
+- - - - -
+Test 
+	icecast2 and streamripper
+		Run liquidsoap from some laptop to
+		stream MP3s to the RPI
+		ensure MP3 files are stored on RPI filesystem
+	Uploader
+		ensure MP3s uploaded every 2 hours to dobmir
+	Autossh
+		ensure you can SSH to the cloud server dobmir into the RPI
+
+
+- - - - -
+TODOs: 
+	SUPPRESS WIFI
+	Start with a fresh new microSD, and repeat the setup steps.
+	Prepare multiple fresh new microSDs and verify they can be swapped in.
+	Buy or procure another RPI with wired ethernet.  Where is Nate's?
+
+	Ask experts for advice:
+	- Power: 
+		How best to power the RPI highly available?
+		RPI USB power to a 15 minute UPS
+		12v scooter battery with continuous external charger, USB power supply to RPI
+
+	- Filesystem
+		How to make the filesystem robust?
+		Power glitches often corrupt the microSD filesystem	
+		Make microSD read-only as much as possible?
+		External USB memory stick for MP3 files?
+		SSD drive for MP3 files?
+
+
+
+
+---END-OF-FILE---

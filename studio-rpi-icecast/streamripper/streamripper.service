@@ -1,0 +1,47 @@
+#-----------------------------------------------------------------------
+# Service file for streamripper for RPI Raspbian Stretch Lite
+#
+# Setup
+#     Place this file here: /etc/systemd/system/streamripper.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable streamripper.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep streamripper
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status streamripper.service
+#     systemctl start  streamripper.service
+#     systemctl stop   streamripper.service
+#
+# Disable from autostart
+#     systemctl disable streamripper.service
+#
+# AD 2019-0408-1359 Updated for RPI
+# AD 2017-0806-1715 Copyright BMIR 2017,2019
+#-----------------------------------------------------------------------
+[Unit]
+Description=Streamripper service
+After=icecast.service
+
+[Service]
+Type=simple
+ExecStart=/home/pi/bin/streamripper.archiver.sh
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user pi
+User=pi
+Group=pi
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=streamripperbmir
+
+[Install]
+WantedBy=multi-user.target
+
