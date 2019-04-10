@@ -66,6 +66,8 @@ date >> ${OUTFILE}
 echo ${DELIMITER} >> ${OUTFILE}
 ps -ef | grep streamripper | grep -v grep >> ${OUTFILE}
 ps -ef | grep icecast | grep -v grep >> ${OUTFILE}
+ps -ef | grep uploader | grep -v grep >> ${OUTFILE}
+ps -ef | grep autossh | grep -v grep >> ${OUTFILE}
 
 
 # Filesystem usage
