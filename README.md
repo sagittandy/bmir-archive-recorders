@@ -8,7 +8,33 @@ Several tools and techniques have been used to record the archives over the year
 ![Image of BMIR](https://raw.githubusercontent.com/sagittandy/bmir-archive-recorders/master/pix/bmir.archivers.2017.png)
 
 
-## Studio Icecast + Streamripper
+## Studio Icecast + Streamripper on a Raspberry Pi microcomputer
+
+These two processes will run on one raspberry pi microcomputer in the studio.  Orban Opticodec will 'upload' a digitized music stream to this icecast2 server (in addition to uploading to several music servers on the public internet.).  Streamripper on the RPI 'listens' to the stream from icecast on the RPI, and records it to mp3 files on the RPI.
+
+This is the same Icecast + Streamripper technique which was used the last two years running on a computer, but now running on an RPI.  All the setup scripts were revamped and cleaned up, and are published in this repo in folder studio-rpi-icecast.
+
+The RPI capabilities are similar to the desktop computer, including SSH tunnel for remote debug, and an auto-uploader to transfer MP3 files to a cloud server.  In addition, a script has been developed to publish rudimentary OS stats to the cloud server (such as CPU utilization, memory consumption, etc)
+
+Benefits of RPI vs desktop computer are smaller size and lighter weight (good for transporting cross-country!), lower power, lower heat, and less dust susceptibility.
+
+Expected design challenges unique to the RPI include selecting a highly-available power supply design, and trying to minimize wearing writes to the SDCard.
+
+The RPI archiver is new and experimental at Burning Man 2019!!
+
+## SSH tunnel for remote access
+
+For Burning Man 2018, scripts were developed to implement an SSH tunnel from a cloud server to the archiver machine in the studio.  This allowed the author to SSH into the machine after he left Burning Man early, and do any required mantainence remotely.
+
+This was first used at Burning Man 2018.
+
+## Automatic uploader
+
+During Burning Man 2018, scripts were written on-playa (actually in the developer's tent) to automatically upload the mp3 files from the icecast/streamripper computer in the studio to a cloud server, every two hours.  This serves as backup, and makes the files available for organization sooner.  And it eliminated the daily backup effort of copying mp3 files to USB keys!
+
+The uploader was first used at Burning Man 2018.
+
+## Studio Icecast + Streamripper on a desktop computer
 
 These two processes will run on one standalone Ubuntu Linux computer in the studio.  Orban Opticodec will 'upload' a digitized music stream to this icecast2 server (in addition to uploading to several music servers on the public internet.).  Streamripper 'listens' to the stream from icecast and records it to mp3 files.
 
