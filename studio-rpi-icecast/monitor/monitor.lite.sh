@@ -5,6 +5,9 @@
 # Prereqs:
 #	User must have SSH key access to the cloud server.
 #
+# Setup: 
+# 	Place this file in folder /home/pi/bin/
+#
 # Usage: 
 #	Manual: Run this script as non-root: 
 #
@@ -15,7 +18,7 @@
 #	As user pi (the user which will run this python script),
 #		crontab -e
 #		Add line
-#			*/2 * * * * cd /home/pi && ./monitor.lite.sh
+#			*/2 * * * * cd /home/pi/bin && ./monitor.lite.sh
 #
 #	Cron specification tester: https://crontab.guru/ 
 #
@@ -60,7 +63,7 @@ echo "<PRE>" >> ${OUTFILE}
 echo ${DELIMITER} >> ${OUTFILE}
 echo "BMIR Archiver System Status" >> ${OUTFILE}
 date >> ${OUTFILE}
-
+hostname >> ${OUTFILE}
 
 # Running processes
 echo ${DELIMITER} >> ${OUTFILE}
