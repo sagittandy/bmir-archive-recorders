@@ -184,6 +184,44 @@ Set up UFW (Ubuntu Firewall)
 	ufw/
 
 - - - - -
+2019-0414-2130 EXPERIMENTS WITH USB AUTOMOUNT AUTOUNMOUNT
+
+Installed usbmount
+	By default, USB mounts under
+		/media/usb which symlinks to one of the following:
+		/media/usb0
+		/media/usb1
+		/media/usb2
+		/media/usb3
+		/media/usb4
+		/media/usb5
+		/media/usb6
+		/media/usb7
+
+	With exactly 1 USB flash drive installed for mp3 files,
+	I should change scripting to write to /media/usb/bmir
+
+Problem: by default, usbmount mounts gives filesystem permissions to root only
+	and I couldn't figure out how to chmod it.
+Solution?: This post: 
+		Tue Sep 24, 2013 2:51 pm
+	on this page:
+		https://www.raspberrypi.org/forums/viewtopic.php?t=56446
+	reports same problem and gives changes to /etc/usbmount/usbmount.conf
+		FS_MOUNTOPTIONS="-fstype=vfat,gid=users,uid=nobody,umask=002,sync"
+
+	Also, the cfg file has some doc about sync option; sync is hot pluggable
+		but may wear out the USB flash drive sooner than not sync, 
+		but then you need to issue pumount command.
+		
+	See usbmount.rpi.2019-0414-2144.conf
+
+	I am experimenting with these values (ownership by user pi)
+
+===>		FS_MOUNTOPTIONS="-fstype=vfat,gid=pi,uid=pi,umask=002,sync"
+
+
+- - - - -
 Monitor (uploads stats HTML file to cloud server every 2 mins)
 	monitor/
 
@@ -216,7 +254,7 @@ TODOs:
 		How to make the filesystem robust?
 		Power glitches often corrupt the microSD filesystem	
 		Make microSD read-only as much as possible?
-		External USB memory stick for MP3 files?   <== Stuck here
+		External USB memory stick for MP3 files?
 		SSD drive for MP3 files?
 
 
