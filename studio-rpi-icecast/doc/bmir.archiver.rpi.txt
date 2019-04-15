@@ -148,9 +148,16 @@ Set timezone to US PACIFIC
 	timedatectl set-timezone America/Los_Angeles
 
 - - - - -
+Edit /etc/hostname as root
+	Change raspberrypi to your new hostname
+	Example: bmirpi7
+
+- - - - -
 Edit /etc/hosts as root
-Set hostname + IP of target cloud server (for uploading MP3s)
-Example: 1.2.3.4 dobmir
+Set hostname of THIS RPI. Change raspberrypi to your new hostname
+	Example: bmirpi7
+Set hostname + IP of target cloud server (destination for uploading MP3s)
+	Example: 1.2.3.4 dobmir
 
 - - - - -
 For uploader and autossh
@@ -202,14 +209,14 @@ TODOs:
 	Ask experts for advice:
 	- Power: 
 		How best to power the RPI highly available?
-		RPI USB power to a 15 minute UPS
+		RPI USB power to a 15 minute UPS  <== Mark recommends this.
 		12v scooter battery with continuous external charger, USB power supply to RPI
 
 	- Filesystem
 		How to make the filesystem robust?
 		Power glitches often corrupt the microSD filesystem	
 		Make microSD read-only as much as possible?
-		External USB memory stick for MP3 files?
+		External USB memory stick for MP3 files?   <== Stuck here
 		SSD drive for MP3 files?
 
 
