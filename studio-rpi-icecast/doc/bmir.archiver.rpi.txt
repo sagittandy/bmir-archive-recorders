@@ -62,18 +62,15 @@ Confirm two new file systems are mounted to the laptop
 			/boot
 			/rootfs
 
-Optional:  Copy utilities, zips, and other personalization files
-	to the SDCard on your laptop for use in the RPi.
-
+As non-root user on laptop:
 	To enable SSH listener on the RPi, issue this as non-root:
-		touch /boot/ssh
+		touch the SD Card folder: /boot/ssh
 
-		Example: touch /media/USER/boot/ssh
+		Example: touch /media/<USER>/boot/ssh
 
-	FOR DEBUG ONLY, NOT FOR PRODUCTION...
-	To enable Wi-Fi password-protected access on the RPi, 
+	Optional:  To enable Wi-Fi password-protected access on the RPi, 
 	create and edit file
-		/boot/wpa_supplicant.conf
+		/media/<USER>/boot/wpa_supplicant.conf
 	with these contents (or similar for your country, security type, etc)
 		country=US
 		ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -81,19 +78,25 @@ Optional:  Copy utilities, zips, and other personalization files
 
 		network={
 		    ssid="YOUR_WIFI_NETWORK_NAME"
-		    scan_ssid=1
 		    psk="YOUR_WIFI_PASSWORD"
 		    key_mgmt=WPA-PSK
 		}
 
-	Example: cp -p ~/personal/dl/raspberry.pi/server-in-a-box/boot-dir/wpa_supplicant.conf  /media/USER/boot/
+Optional:  Copy utilities, zips, and other personalization files
+	to the SDCard on your laptop for use in the RPi.
+
+As root user on laptop:
 
 	To enable password-free ssh from your laptop to RPI,
-	copy your authorized_keys file to /media/<user>/boot
+	copy your authorized_keys file to /media/<USER>/rootfs/home/pi/
 
 	To setup icecast2, streamripper, and all utility scripts,
 		Download to your laptop https://github.com/sagittandy/bmir-archive-recorders
-		Copy folder studio-rpi-icecast to /media/USER/boot/
+		Copy folder studio-rpi-icecast to /media/<USER>/rootfs/home/pi/
+
+	To setup SSH key authentication, copy your zip containing creds to the same dir.
+	Example:
+		cp dot.ssh.rpi.2019-0407-2335.zip /media/<USER>/rootfs/home/pi/
 
 Your SDCard is now ready to unmount from the laptop
 	and install into a powered-off RPi.
@@ -101,6 +104,8 @@ Your SDCard is now ready to unmount from the laptop
 - - - - -
 Placed in Mod 3 rPI with wired ethernet.
 rPI booted slowly and established two enet connections (one wired and one wireless)
+
+SSH to both IPs as user pi.  Use default password 'raspberry'.
 
 ip -4 address show
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
@@ -126,10 +131,25 @@ shutdown -r now
 SSH in again.  Confirm no further OS updates.
 
 - - - - -
+Clean up transferred utility files transferred to SD Card:
+	As user root on RPI:
+	chown -R pi /home/pi/authorized_keys
+	chrgp -R pi /home/pi/authorized_keys
+	chmod 755   /home/pi/authorized_keys
+	
+- - - - -
 apt-get -y install zip
 
 - - - - -
-SSH keys (on RPI) if you have a zip available from earlier RPIs...
+Several choices to set up SSH key authentication on RPI...
+
+If you just have the authorized keys file,
+	ssh-keygen -t rsa
+	then
+	cd ~/.ssh/
+	mv authorized_keys ~/.ssh/
+
+If you have a zip available from earlier RPIs...
 mkdir /home/pi/.ssh
 chmod 700 /home/pi/.ssh
 unzip the contents of dot.ssh.rpi.2019-0407-2335.zip in the .ssh folder
@@ -176,6 +196,7 @@ For uploader and autossh
 Install and setup apps, according to instructions in each folder:
 	icecast2/
 	streamripper/
+		Missing step: Move streamripper.sh to /home/pi/bin/
 	autossh/
 	uploader/
 
@@ -184,42 +205,15 @@ Set up UFW (Ubuntu Firewall)
 	ufw/
 
 - - - - -
-2019-0414-2130 EXPERIMENTS WITH USB AUTOMOUNT AUTOUNMOUNT
+To automount and autounmount USB Flash memory sticks
+(for mp3 file storage)
 
-Installed usbmount
-	By default, USB mounts under
-		/media/usb which symlinks to one of the following:
-		/media/usb0
-		/media/usb1
-		/media/usb2
-		/media/usb3
-		/media/usb4
-		/media/usb5
-		/media/usb6
-		/media/usb7
+	usbmount/
 
-	With exactly 1 USB flash drive installed for mp3 files,
-	I should change scripting to write to /media/usb/bmir
-
-Problem: by default, usbmount mounts gives filesystem permissions to root only
-	and I couldn't figure out how to chmod it.
-Solution?: This post: 
-		Tue Sep 24, 2013 2:51 pm
-	on this page:
-		https://www.raspberrypi.org/forums/viewtopic.php?t=56446
-	reports same problem and gives changes to /etc/usbmount/usbmount.conf
-		FS_MOUNTOPTIONS="-fstype=vfat,gid=users,uid=nobody,umask=002,sync"
-
-	Also, the cfg file has some doc about sync option; sync is hot pluggable
-		but may wear out the USB flash drive sooner than not sync, 
-		but then you need to issue pumount command.
-		
-	See usbmount.rpi.2019-0414-2144.conf
-
-	I am experimenting with these values (ownership by user pi)
-
-===>		FS_MOUNTOPTIONS="-fstype=vfat,gid=pi,uid=pi,umask=002,sync"
-
+TODO: If you want to store MP3 files to USB, experiment with changing archiver 
+files to write to /media/usb/bmir (or symlink from /home/pi/bmir)
+	- streamripper.archiver.sh   DEST_PATH=/home/pi/bmir
+	- uploader.json   "local_base_dir": "/home/pi/bmir"
 
 - - - - -
 Monitor (uploads stats HTML file to cloud server every 2 mins)
@@ -238,24 +232,19 @@ Test
 
 
 - - - - -
+Ancillaries:
+	Power: Mark recommends powering with a commercial 120vac UPS, with Canakit's 2.5A USB power adapter.
+	Test setup: Started with a fresh new microSD, and repeated the setup steps above.  Done.
+
 TODOs: 
-	SUPPRESS WIFI
-	Start with a fresh new microSD, and repeat the setup steps.
+	SUPPRESS WIFI before BM19
 	Prepare multiple fresh new microSDs and verify they can be swapped in.
-	Buy or procure another RPI with wired ethernet.  Where is Nate's?
+	Buy or procure another RPI3 with wired ethernet.  Where is Nate's?
+	Test for months in operation with liquidsoap
 
-	Ask experts for advice:
-	- Power: 
-		How best to power the RPI highly available?
-		RPI USB power to a 15 minute UPS  <== Mark recommends this.
-		12v scooter battery with continuous external charger, USB power supply to RPI
-
-	- Filesystem
-		How to make the filesystem robust?
-		Power glitches often corrupt the microSD filesystem	
-		Make microSD read-only as much as possible?
+	Research Filesystem:
+		Make microSD read-only as much as possible?  (must keep cron running for uploader and monitor)
 		External USB memory stick for MP3 files?
-		SSD drive for MP3 files?
 
 
 

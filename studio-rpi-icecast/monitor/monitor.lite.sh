@@ -36,6 +36,7 @@ export REMOTE_SERVER="dobmir"
 export REMOTE_FOLDER="/home/pi/bmir"
 export LOCAL_FOLDER="/home/pi/bmir"
 export LOCAL_FILESYSTEM="/dev/root"
+export USB_FILESYSTEM="/media/"
 
 
 # Ensure non-root
@@ -67,6 +68,7 @@ hostname >> ${OUTFILE}
 
 # Running processes
 echo ${DELIMITER} >> ${OUTFILE}
+echo "Running processes..." >> ${OUTFILE}
 ps -ef | grep streamripper | grep -v grep >> ${OUTFILE}
 ps -ef | grep icecast | grep -v grep >> ${OUTFILE}
 ps -ef | grep uploader | grep -v grep >> ${OUTFILE}
@@ -75,12 +77,15 @@ ps -ef | grep autossh | grep -v grep >> ${OUTFILE}
 
 # Filesystem usage
 echo ${DELIMITER} >> ${OUTFILE}
+echo "Filesystem usage..." >> ${OUTFILE}
 df -k | grep Filesystem >> ${OUTFILE}
 df -k | grep ${LOCAL_FILESYSTEM} >> ${OUTFILE}
+df -k | grep ${USB_FILESYSTEM} >> ${OUTFILE}
 
 
 # CPU and Memory
 echo ${DELIMITER} >> ${OUTFILE}
+echo "CPU and memory..." >> ${OUTFILE}
 top -bn1 | grep Tasks >> ${OUTFILE}
 top -bn1 | grep Cpu >> ${OUTFILE}
 top -bn1 | grep KiB >> ${OUTFILE}
@@ -88,16 +93,19 @@ top -bn1 | grep KiB >> ${OUTFILE}
 
 # MP3 folder size
 echo ${DELIMITER} >> ${OUTFILE}
+echo "MP3 folder size..." >> ${OUTFILE}
 du -sk ${LOCAL_FOLDER}/* >> ${OUTFILE}
 
 
 # Listening ports
 echo ${DELIMITER} >> ${OUTFILE}
+echo "Listening ports..." >> ${OUTFILE}
 netstat -na | grep LIST | grep tcp >> ${OUTFILE}
 
 
 # IP addresses
 echo ${DELIMITER} >> ${OUTFILE}
+echo "IP addresses..." >> ${OUTFILE}
 ip -4 ad sh | grep inet >> ${OUTFILE}
 
 
