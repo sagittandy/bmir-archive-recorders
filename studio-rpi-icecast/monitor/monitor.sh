@@ -11,14 +11,24 @@
 # Usage: 
 #	Manual: Run this script as non-root: 
 #
-#		./monitor.lite.sh
+#		./monitor.sh
+#
+# Automatic execution: Either use systemd timer or cron:
+#
+# Systemd timer:
+#	As root:
+#	Move monitor.timer and monitor.service to /etc/systemd/system/
+#	systemctl daemon-reload
+#	systemctl enable monitor.service monitor.timer # Enable both
+#	systemctl start monitor.timer	# Start timer only
+#	systemctl list-timers --all
 #
 # Cron:
 #	Set up cron to run this every two minutes
 #	As user pi (the user which will run this python script),
 #		crontab -e
 #		Add line
-#			*/2 * * * * cd /home/pi/bin && ./monitor.lite.sh
+#			*/2 * * * * cd /home/pi/bin && ./monitor.sh
 #
 #	Cron specification tester: https://crontab.guru/ 
 #

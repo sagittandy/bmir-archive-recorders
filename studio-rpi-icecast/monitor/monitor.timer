@@ -1,0 +1,11 @@
+[Unit]
+Description=Run monitor every 1 min
+Requires=monitor.service
+
+[Timer]
+Unit=monitor.timer
+OnUnitActiveSec=1m
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
