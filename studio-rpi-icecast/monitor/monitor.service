@@ -3,7 +3,7 @@ Description=Runs monitor
 Wants=monitor.timer
 
 [Service]
-ExecStart=/home/pi/bin/log.appender.sh
+ExecStart=/home/pi/bin/monitor.sh
 WorkingDirectory=/home/pi/bin
 User=pi
 Group=pi

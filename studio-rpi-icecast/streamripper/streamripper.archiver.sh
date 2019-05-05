@@ -29,7 +29,8 @@
 #-----------------------------------------------------------------------
 PREFIX=bmir
 RADIOSTREAM=http://localhost:8000/bmir
-DEST_PATH=/home/pi/bmir
+### DEST_PATH=/home/pi/bmir
+DEST_PATH=/media/usb/bmir
 ERR_LOG=$DEST_PATH/error.log
 echo "ERR_LOG=$ERR_LOG"
 

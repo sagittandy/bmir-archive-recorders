@@ -47,6 +47,7 @@ export REMOTE_FOLDER="/home/pi/bmir"
 export LOCAL_FOLDER="/home/pi/bmir"
 export LOCAL_FILESYSTEM="/dev/root"
 export USB_FILESYSTEM="/media/"
+export USB_FOLDER="/media/usb/bmir"
 
 
 # Ensure non-root
@@ -105,6 +106,12 @@ top -bn1 | grep KiB >> ${OUTFILE}
 echo ${DELIMITER} >> ${OUTFILE}
 echo "MP3 folder size..." >> ${OUTFILE}
 du -sk ${LOCAL_FOLDER}/* >> ${OUTFILE}
+
+
+# USB MP3 folder size
+echo ${DELIMITER} >> ${OUTFILE}
+echo "USB MP3 folder size..." >> ${OUTFILE}
+du -sk ${USB_FOLDER}/* >> ${OUTFILE}
 
 
 # Listening ports

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run uploader at 10 mins past every hour
+Requires=uploader.service
+
+[Timer]
+Unit=uploader.timer
+OnCalendar=*-*-* *:10:00
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

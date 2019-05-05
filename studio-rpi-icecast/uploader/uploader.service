@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs uploader
+Wants=uploader.timer
+
+[Service]
+ExecStart=/home/pi/bin/uploader.sh
+WorkingDirectory=/home/pi/bin
+User=pi
+Group=pi
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=uploaderbmir

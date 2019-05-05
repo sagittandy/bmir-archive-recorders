@@ -1,10 +1,10 @@
 [Unit]
-Description=Run monitor every 1 min
+Description=Run monitor every minute
 Requires=monitor.service
 
 [Timer]
 Unit=monitor.timer
-OnUnitActiveSec=1m
+OnCalendar=*-*-* *:1/1:00
 AccuracySec=1s
 
 [Install]
