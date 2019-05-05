@@ -64,7 +64,7 @@ rm ${OUTFILE}
 
 
 # HTML start
-echo "<HTML><meta http-equiv=\"refresh\" content=\"60\">" >> ${OUTFILE}
+echo "<HTML><meta http-equiv=\"refresh\" content=\"30\">" >> ${OUTFILE}
 echo "<BODY>" >> ${OUTFILE}
 echo "<TITLE>BMIR Archiver System Status</TITLE>" >> ${OUTFILE}
 echo "<H3>BMIR Archiver System Status</H3>" >> ${OUTFILE}
