@@ -33,7 +33,6 @@ echo ${DELIMITER}
 echo "Ensuring required prereq files..."
 for FILENAME in authorized_keys id_rsa.pub.rpi id_rsa.rpi wpa_supplicant.conf
 do
-	echo "FILENAME=${FILENAME}"
 	ls ${FILENAME}
 	rc=$?
 	if [ 0 != ${rc} ] ; then

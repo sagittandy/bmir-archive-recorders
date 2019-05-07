@@ -54,7 +54,6 @@ echo ${DELIMITER}
 echo "Ensuring required prereq files..."
 for FILENAME in authorized_keys id_rsa.pub.rpi id_rsa.rpi
 do
-	echo "FILENAME=${FILENAME}"
 	ls ${FILENAME}
 	rc=$?
 	if [ 0 != ${rc} ] ; then
@@ -177,6 +176,16 @@ timedatectl set-timezone America/Los_Angeles
 rc=$?
 if [ 0 != ${rc} ] ; then
         echo "ERROR ${rc} could not set timezone."
+        exit 1
+fi
+
+
+echo ${DELIMITER}
+echo "Creating directory /home/pi/bin..."
+su -c "mkdir -p /home/pi/bin" pi
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} could not create /home/pi/bin."
         exit 1
 fi
 

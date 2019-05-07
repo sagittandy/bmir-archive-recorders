@@ -19,7 +19,7 @@
 #	As root:
 #	Move monitor.timer and monitor.service to /etc/systemd/system/
 #	systemctl daemon-reload
-#	systemctl enable monitor.service monitor.timer # Enable both
+#	systemctl enable monitor.timer  # Enable timer only
 #	systemctl start monitor.timer	# Start timer only
 #	systemctl list-timers --all
 #
