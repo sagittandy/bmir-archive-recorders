@@ -1,7 +1,9 @@
 --------------------------------------------
 Instructions for preparing a Raspberry Pi model 3
 with wired RJ45 internet and Wi-Fi
+and a USB memory stick
 using Raspbian Stretch Lite 
+
 
 AD 2019-0407
 --------------------------------------------
@@ -62,170 +64,95 @@ Confirm two new file systems are mounted to the laptop
 			/boot
 			/rootfs
 
-As non-root user on laptop:
-	To enable SSH listener on the RPi, issue this as non-root:
-		touch the SD Card folder: /boot/ssh
+- - - - -
+Obtain a set of files to setup your RPI.
+They are listed in studio-rpi-icecast/sdcard/setup.laptop.sh.
+Place these files in folder studio-rpi-icacast/sdcard/.
+They are:
+	- two id_rsa files,
+	- one authorized_keys file, and
+	- one wpa_supplicant.conf file.
 
-		Example: touch /media/<USER>/boot/ssh
+wpa_supplicant follows this pattern:
 
-	Optional:  To enable Wi-Fi password-protected access on the RPi, 
-	create and edit file
-		/media/<USER>/boot/wpa_supplicant.conf
-	with these contents (or similar for your country, security type, etc)
-		country=US
-		ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-		update_config=1
+	country=US
+	ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+	update_config=1
 
-		network={
-		    ssid="YOUR_WIFI_NETWORK_NAME"
-		    psk="YOUR_WIFI_PASSWORD"
-		    key_mgmt=WPA-PSK
-		}
+	network={
+		ssid="YOUR_WIFI_NETWORK_NAME"
+		psk="YOUR_WIFI_PASSWORD"
+		key_mgmt=WPA-PSK
+	}
 
-Optional:  Copy utilities, zips, and other personalization files
-	to the SDCard on your laptop for use in the RPi.
+As a NON-ROOT user on your laptop, run this script:
 
-As root user on laptop:
+	./setup.laptop.sh
 
-	To enable password-free ssh from your laptop to RPI,
-	copy your authorized_keys file to /media/<USER>/rootfs/home/pi/
-
-	To setup icecast2, streamripper, and all utility scripts,
-		Download to your laptop https://github.com/sagittandy/bmir-archive-recorders
-		Copy folder studio-rpi-icecast to /media/<USER>/rootfs/home/pi/
-
-	To setup SSH key authentication, copy your zip containing creds to the same dir.
-	Example:
-		cp dot.ssh.rpi.2019-0407-2335.zip /media/<USER>/rootfs/home/pi/
-
-Your SDCard is now ready to unmount from the laptop
-	and install into a powered-off RPi.
+After successful completion,
+your SDCard is now ready to unmount from the laptop
+and install into a powered-off RPi.
 
 - - - - -
-Placed in Mod 3 rPI with wired ethernet.
-rPI booted slowly and established two enet connections (one wired and one wireless)
+Place the SDCard in a powered-off Mod 3 rPI with wired ethernet and USB memory stick.
+Power-on.
+RPI will boot slowly and establish two enet connections (one wired and one wireless).
+
+Discover their IPs from your wifi router admin/console.
+One is wired and one is Wi-Fi.
 
 SSH to both IPs as user pi.  Use default password 'raspberry'.
-
-ip -4 address show
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    inet 192.168.10.114/24 brd 192.168.10.255 scope global eth0
-       valid_lft forever preferred_lft forever
-3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    inet 192.168.10.113/24 brd 192.168.10.255 scope global wlan0
-       valid_lft forever preferred_lft forever
-
-Confirm SSH works to both.
+Confirm SSH works to both interfaces.
 
 - - - - -
-Changed pi password to <YOUR_PI_PASSWORD>
-Changed root password to <YOUR_ROOT_PASSWORD>
+As ROOT user on your RPI, run this script
 
-apt-get update
-apt-get -y dist-upgrade
-shutdown -r now
+	/boot/studio-rpi-icecast/sdcard/setup.rpi.sh <PASSWORD> <HOSTNAME>
+
+	where
+		<PASSWORD> will be used for both root and pi
+		<HOSTNAME> will be the hostname of the RPI
+
+After successful execution, reboot via shutdown -r now.
 
 SSH in again.  Confirm no further OS updates.
 
 - - - - -
-Clean up transferred utility files transferred to SD Card:
-	As user root on RPI:
-	chown -R pi /home/pi/authorized_keys
-	chrgp -R pi /home/pi/authorized_keys
-	chmod 755   /home/pi/authorized_keys
-	
-- - - - -
-apt-get -y install zip
+As user ROOT on the RPI, run the following scripts and manual commands...
 
-- - - - -
-Several choices to set up SSH key authentication on RPI...
+	cd /home/pi/studio-rpi-icecast/
 
-If you just have the authorized keys file,
-	ssh-keygen -t rsa
-	then
-	cd ~/.ssh/
-	mv authorized_keys ~/.ssh/
+	apt-get -y install ufw
+	./ufw/ufw.setup.sh
 
-If you have a zip available from earlier RPIs...
-mkdir /home/pi/.ssh
-chmod 700 /home/pi/.ssh
-unzip the contents of dot.ssh.rpi.2019-0407-2335.zip in the .ssh folder
-
-### Move /boot/authorized_keys to /home/pi/.ssh/
-### cp authorized_keys /home/pi/.ssh/  
-
-SSH in again.  Confirm no password required.
-
-Otherwise, start from scratch:
-	ssh-keygen -t rsa
-	etc
-
-- - - - -
-Set timezone to US PACIFIC 
-	timedatectl set-timezone America/Los_Angeles
-
-- - - - -
-Edit /etc/hostname as root
-	Change raspberrypi to your new hostname
-	Example: bmirpi7
-
-- - - - -
-Edit /etc/hosts as root
-Set hostname of THIS RPI. Change raspberrypi to your new hostname
-	Example: bmirpi7
-Set hostname + IP of target cloud server (destination for uploading MP3s)
-	Example: 1.2.3.4 dobmir
-
-- - - - -
-For uploader and autossh
-	On cloud server dobmir,
-	create new user 'pi'
-		adduser pi
-			password: <YOUR_PASSWORD>
-	if you have a zip available from earlier RPIs...
-		unzip dot.ssh.rpi.2019-0407-2335.zip into a tmp folder
-		cp -p authorized_keys.pi.dingx to /home/pi/.ssh/authorized_keys
-		This authorized pi@rpi to ssh into pi@dobmir without password.
-	Otherwise, copy id_rsa.pub from the RPI .ssh/authorized_hosts folder.
-	Ensure you can sh from pi@rpi to pi@dobmir
-
-- - - - -
-Set up UFW (Ubuntu Firewall)
-	ufw/
-
-- - - - -
-To automount and autounmount USB Flash memory sticks
-(for mp3 file storage)
-
-	usbmount/
-
-When done, create folder on your USB for the bmir archive:
-
+	./usbmount/install.configure.usbmount.sh
 	mkdir /media/usb/bmir
 
-DONE: If you want to store MP3 files to USB, experiment with changing archiver 
-files to write to /media/usb/bmir (or symlink from /home/pi/bmir)
-	- streamripper.archiver.sh   DEST_PATH=/home/pi/bmir
-	- uploader.json   "local_base_dir": "/home/pi/bmir"
+	./autossh/install.autossh.sh
+	./autossh/setup.autossh.service.sh
 
-- - - - -
-Install and setup apps, according to instructions in each folder:
-	icecast2/
-	streamripper/
-		Missing step: Move streamripper.sh to /home/pi/bin/
-	autossh/
-	monitor/
-	uploader/
+	./icecast2/install.icecast.sh
+	./icecast2/configure.icecast2.sh
+	./icecast2/setup.icecast.service.sh
+
+	./streamripper/install.streamripper.sh
+	./streamripper/setup.streamripper.service.sh
+
+	./monitor/setup.monitor.timer.sh
+
+	./uploader/setup.uploader.timer.sh
+
+Note: the liquidsoap scripts are not used in this RPI.
+
+After completion, please reboot via shutdown -r now.
 
 - - - - -
 Test 
 	icecast2 and streamripper
-		Run liquidsoap from some laptop to
-		stream MP3s to the RPI
-		ensure MP3 files are stored on RPI filesystem
+		Run liquidsoap from some computer to stream MP3s to the RPI
+		ensure MP3 files are stored on USB filesystem
+	Monitor
+		ensure the web page on dobmir is updated every minute
 	Uploader
 		ensure MP3s uploaded every 2 hours to dobmir
 	Autossh
@@ -233,19 +160,16 @@ Test
 
 
 - - - - -
-Ancillaries:
-	Power: Mark recommends powering with a commercial 120vac UPS, with Canakit's 2.5A USB power adapter.
-	Test setup: Started with a fresh new microSD, and repeated the setup steps above.  Done.
+Production setup:
+	Redundancy: Prepare two complete RPIs in secure enclosures (ammo boxes)
+	Power: Use a commercial 120vac UPS, with Canakit's 2.5A USB power adapter.
 
 TODOs: 
-	SUPPRESS WIFI before BM19
+-->	Create one master bash files to run all the scripts listed above on RPI.
+	Optional? Suppress Wi-Fi.
 	Prepare multiple fresh new microSDs and verify they can be swapped in.
-	Buy or procure another RPI3 with wired ethernet.  Where is Nate's?
-	Test for months in operation with liquidsoap
-
-	Research Filesystem:
-		Make microSD read-only as much as possible?  (must keep cron running for uploader and monitor)
-		External USB memory stick for MP3 files?
+	Research RPI Filesystem:
+		Minimize spurious writes to the RPI SDCard.  Do not make totally read-only.
 
 
 
