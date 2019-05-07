@@ -193,14 +193,6 @@ For uploader and autossh
 	Ensure you can sh from pi@rpi to pi@dobmir
 
 - - - - -
-Install and setup apps, according to instructions in each folder:
-	icecast2/
-	streamripper/
-		Missing step: Move streamripper.sh to /home/pi/bin/
-	autossh/
-	uploader/
-
-- - - - -
 Set up UFW (Ubuntu Firewall)
 	ufw/
 
@@ -210,14 +202,23 @@ To automount and autounmount USB Flash memory sticks
 
 	usbmount/
 
-TODO: If you want to store MP3 files to USB, experiment with changing archiver 
+When done, create folder on your USB for the bmir archive:
+
+	mkdir /media/usb/bmir
+
+DONE: If you want to store MP3 files to USB, experiment with changing archiver 
 files to write to /media/usb/bmir (or symlink from /home/pi/bmir)
 	- streamripper.archiver.sh   DEST_PATH=/home/pi/bmir
 	- uploader.json   "local_base_dir": "/home/pi/bmir"
 
 - - - - -
-Monitor (uploads stats HTML file to cloud server every 2 mins)
+Install and setup apps, according to instructions in each folder:
+	icecast2/
+	streamripper/
+		Missing step: Move streamripper.sh to /home/pi/bin/
+	autossh/
 	monitor/
+	uploader/
 
 - - - - -
 Test 

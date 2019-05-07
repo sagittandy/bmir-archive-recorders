@@ -13,7 +13,7 @@
 #
 # Run this script as user (not root).
 #
-# Run this script from folder script-monster.
+# Run this script from folder sdcard.
 #
 # AD 2019-0506-2007 Created
 #-----------------------------------------------------------------------

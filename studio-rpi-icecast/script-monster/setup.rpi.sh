@@ -5,15 +5,15 @@
 #
 # Invoke:
 #	sudo su -
-#	cd /boot/studio-rpi-icecast/script-monster 
-# 	./rpi1.root.sh <PASSWORD> <HOSTNAME>
+#	cd /boot/studio-rpi-icecast/sdcard 
+# 	./setup.rpi.sh <PASSWORD> <HOSTNAME>
 #	where
 #		<PASSWORD> is used for both pi and root
 #		<HOSTNAME> is the new hostname of the RPI
 #
 # Run as root.
 #
-# Run this script from folder script-monster.
+# Run this script from folder sdcard.
 #
 # AD 2019-0506-2100 Created
 #-----------------------------------------------------------------------
@@ -32,7 +32,7 @@ echo "Confirmed user root."
 echo ${DELIMITER}
 echo "Checking parameter count..."
 if [ $# -ne 2 ] ; then
-	echo "USER ERROR: Wrong number of parameters. Enter ./rpi1.root.sh <PASSWORD> <HOSTNAME> "
+	echo "USER ERROR: Wrong number of parameters. Enter ./setup.rpi.sh <PASSWORD> <HOSTNAME> "
 	exit 9
 fi
 echo "Confirmed parameter count."
