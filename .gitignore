@@ -1,3 +1,3 @@
-studio-rpi-icecast/script-monster/authorized_keys
-studio-rpi-icecast/script-monster/id_rsa.*
-studio-rpi-icecast/script-monster/wpa_supplicant.conf
+studio-rpi-icecast/sdcard/authorized_keys
+studio-rpi-icecast/sdcard/id_rsa.*
+studio-rpi-icecast/sdcard/wpa_supplicant.conf
