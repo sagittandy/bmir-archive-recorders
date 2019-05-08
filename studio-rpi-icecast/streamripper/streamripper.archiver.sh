@@ -47,6 +47,14 @@ update_timestamp()
 }
 
 
+# Create the MP3 directory if it does not already exist.
+ls ${DEST_PATH}
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} DEST_PATH does not exist. Creating it: ${DEST_PATH}"
+        mkdir -p ${DEST_PATH}
+fi
+
 
 while [ 1 -le 2 ]
 do
