@@ -131,7 +131,7 @@ As user ROOT on the RPI, run the following scripts and manual commands...
 	./autossh/install.autossh.sh
 	./autossh/setup.autossh.service.sh
 
-	./icecast2/install.icecast.sh
+	./icecast2/install.icecast2.sh
 	./icecast2/configure.icecast2.sh
 	./icecast2/setup.icecast.service.sh
 

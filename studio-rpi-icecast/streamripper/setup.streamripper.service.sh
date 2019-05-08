@@ -77,7 +77,7 @@ sleep 3
 systemctl enable ${SERVICE}.service
 rc=$?
 if [ 0 != ${rc} ] ; then
-        echo "ERROR ${rc} could not copy enable service."
+        echo "ERROR ${rc} could not enable service."
         exit 1
 fi
 
@@ -88,7 +88,7 @@ sleep 3
 systemctl start ${SERVICE}.service
 rc=$?
 if [ 0 != ${rc} ] ; then
-        echo "ERROR ${rc} could not copy start service."
+        echo "ERROR ${rc} could not start service."
         exit 1
 fi
 
@@ -99,8 +99,8 @@ sleep 3
 systemctl --no-pager status ${SERVICE}.service
 rc=$?
 if [ 0 != ${rc} ] ; then
-        echo "ERROR ${rc} could not copy show service status."
-        exit 1
+        echo "WARNING ${rc} Could not show service status. May be caused by icecast2 not running or MP3 programming not being streamed."
+        ### exit 1
 fi
 
 

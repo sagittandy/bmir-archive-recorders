@@ -12,8 +12,9 @@
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
 
-# Ensure root
 echo ${DELIMITER}
+echo "Ensuring root user..."
+sleep 3
 if [[ $EUID -ne 0 ]]; then
    echo "ERROR: This script must be run as user root." 
    exit 1
@@ -21,6 +22,9 @@ fi
 echo "Confirmed user root."
 
 
+echo ${DELIMITER}
+echo "Denying incoming..."
+sleep 3
 ufw default deny incoming
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -29,6 +33,9 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
+echo ${DELIMITER}
+echo "Allowing outgoing..."
+sleep 3
 ufw default allow outgoing
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -37,6 +44,9 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
+echo ${DELIMITER}
+echo "Allowing ssh..."
+sleep 3
 ufw allow ssh
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -45,6 +55,9 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
+echo ${DELIMITER}
+echo "Allowing 8000/tcp..."
+sleep 3
 ufw allow 8000/tcp
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -53,7 +66,10 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
-ufw enable
+echo ${DELIMITER}
+echo "Enabling UFW..."
+sleep 3
+ufw --force enable
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} could not enable UFW."
@@ -61,6 +77,9 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
+echo ${DELIMITER}
+echo "Checking status..."
+sleep 3
 ufw status
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -69,3 +88,6 @@ if [ 0 != ${rc} ] ; then
 fi
 
 
+
+echo ${DELIMITER}
+echo "Exit.  Success!"
