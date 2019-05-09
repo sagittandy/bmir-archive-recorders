@@ -83,4 +83,16 @@ fi
 
 
 
+sleep 3
+echo ${DELIMITER}
+echo "Confirm the tools folder was copied from github into micro SD card."
+ls /media/${USER_NAME}/boot/studio-rpi-icecast
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} Did not copy tools folder from github to micro SD card."
+	exit 1
+fi
+
+
+
 echo "Exit. Success!"

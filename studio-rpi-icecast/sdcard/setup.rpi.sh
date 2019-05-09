@@ -248,5 +248,7 @@ apt-get -y install icecast2
 
 
 echo ${DELIMITER}
-echo "Exit. Success!...  Please reboot:  shutdown -r now"
+echo "Exit. Success!...  "
+echo "        Please ssh to dobmir, and enter 'yes' one time."
+echo "        Then please reboot:  shutdown -r now"
 
