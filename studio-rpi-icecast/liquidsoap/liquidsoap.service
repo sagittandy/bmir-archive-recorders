@@ -1,0 +1,47 @@
+#-----------------------------------------------------------------------
+# Service file for liquidsoap for Ubuntu.
+#
+# Setup
+#     Edit the username below for your desired user
+#     Place this file here: /etc/systemd/system/liquidsoap.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable liquidsoap.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep liquidsoap
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status liquidsoap.service
+#     systemctl start  liquidsoap.service
+#     systemctl stop   liquidsoap.service
+#
+# Disable from autostart
+#     systemctl disable liquidsoap.service
+#
+# AD 2019-0513-2100 Copyright BMIR 2019
+#-----------------------------------------------------------------------
+[Unit]
+Description=Liquidsoap service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/ding/start.liquidsoap.sh
+WorkingDirectory=/home/ding
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+User=ding
+Group=ding
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=liquidsoapbmir
+
+[Install]
+WantedBy=multi-user.target
+
