@@ -237,6 +237,7 @@ sleep 3
 apt-get -y install autossh
 apt-get -y install streamripper
 apt-get -y install usbmount
+apt-get -y install bc
 # Do not install UFW without configuring, lest we get locked out.
 
 
