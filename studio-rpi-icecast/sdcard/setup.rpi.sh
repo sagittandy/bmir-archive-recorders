@@ -216,6 +216,7 @@ apt-get -y autoremove
 
 echo ${DELIMITER}
 echo "Disabling automatic updates of the OS..."
+echo "Todo: Add error checking here someday..."
 sleep 3
 systemctl stop apt-daily.timer
 systemctl disable apt-daily.timer
@@ -237,6 +238,7 @@ sleep 3
 apt-get -y install autossh
 apt-get -y install streamripper
 apt-get -y install usbmount
+apt-get -y install bc
 # Do not install UFW without configuring, lest we get locked out.
 
 
