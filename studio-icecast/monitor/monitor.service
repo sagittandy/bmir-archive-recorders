@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs monitor
+Wants=monitor.timer
+
+[Service]
+ExecStart=/home/pi/bin/monitor.sh
+WorkingDirectory=/home/pi/bin
+User=pi
+Group=pi
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=monitorbmir
