@@ -2,6 +2,9 @@
 #-----------------------------------------------------------------------
 # Installs liquidsoap on RPI Raspbian Stretch Lite
 #
+#	NOTE: LIQUIDSOAP DID NOT WORK ON APRIL 2019 VERSION OF STRETCH
+#	HAD TO BUILD USING OPAM.  SEARCH LINUXJOUNAL!!!
+#
 # Usage: 
 #	Run this script as root: 
 #

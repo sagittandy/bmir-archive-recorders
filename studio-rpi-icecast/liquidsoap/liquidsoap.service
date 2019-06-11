@@ -29,14 +29,15 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/ding/start.liquidsoap.sh
-WorkingDirectory=/home/ding
+Environment="PATH=/home/pi/.opam/system/bin:/home/pi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/pi/bin/start.liquidsoap.sh
+WorkingDirectory=/home/pi/bin
 ExecReload=/bin/kill -HUP $MAINPID
 # Restart service after several seconds if service crashes
 Restart=always
 RestartSec=7
-User=ding
-Group=ding
+User=pi
+Group=pi
 # Output to syslog
 StandardOutput=syslog
 StandardError=syslog

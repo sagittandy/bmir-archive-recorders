@@ -16,7 +16,7 @@
 export ICECAST_HOST="arc"
 export ICECAST_PORT=8000
 export ICECAST_SOURCE_PASSWORD="sourcepw"
-export MP3_DIR="/home/ding" ###"/tmp/mp3"
+export MP3_DIR="/home/pi/mp3"
 export M3U_FILE="testclips.m3u"
  
 
