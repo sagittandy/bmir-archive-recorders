@@ -168,7 +168,7 @@ RMS_AMP_FLOAT=`grep RMS ers.txt | grep amplitude | awk '{ print $3 }'`
 # Save the last several minutes of amplitude values
 ### ls -l ${RMS_AMP_FILE}
 ### cat ${RMS_AMP_FILE}
-tail -19 ${RMS_AMP_FILE} > ${RMS_AMP_FILE}.tmp
+tail -29 ${RMS_AMP_FILE} > ${RMS_AMP_FILE}.tmp
 cp ${RMS_AMP_FILE}.tmp ${RMS_AMP_FILE}
 echo ${RMS_AMP_FLOAT} >> ${RMS_AMP_FILE}
 ### ls -l ${RMS_AMP_FILE}
