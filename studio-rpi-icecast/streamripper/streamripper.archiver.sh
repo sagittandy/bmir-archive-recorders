@@ -220,7 +220,8 @@ do
 	echo "# Finished audio will be stored to $fullpath"
 	echo "# Audio storage directory is currently $(echo $current_size)MB of the $(echo $audio_sizecap)MB cap."
 	printf "###\n\n"
-	/usr/bin/streamripper $radiostream -a $filename -s -l $riptime -d $fullpath -c
+	# AD 2019-0612 Added -A option (uppercase) to suppress splits based on ID3 metadata.
+	/usr/bin/streamripper $radiostream -A -a $filename -s -l $riptime -d $fullpath -c
 	echo "Recording has halted!"
 	printf "> Appending stop time to ripped file... \n"
 	cd $fullpath
