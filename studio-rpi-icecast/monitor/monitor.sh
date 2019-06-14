@@ -38,6 +38,8 @@
 #
 # AD 2019-0408-2002 Copyright BMIR 2019
 #-----------------------------------------------------------------------
+set +H  # Turn off history expansion in order to use exclamation points in strings.
+
 export DELIMITER="----------------------------------------------------------------------------------"
 
 export OUTFILE="bmir.archiver.status.html"
@@ -50,6 +52,14 @@ export USB_FILESYSTEM="/media/"
 export USB_FOLDER="/media/usb/bmir"
 export RMS_AMP_FILE="rms.amplitudes.txt"
 export DISK_USAGE_FILE="disk.usage.txt"
+export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
+export PLACEHOLDER_FILESYSTEM_VALUE="PLACEHOLDER_FILESYSTEM_VALUE"
+export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
+export PLACEHOLDER_AMPLITUDE_VALUE="PLACEHOLDER_AMPLITUDE_VALUE"
+
+export HTML_GREEN="#00FF00"
+export HTML_YELLOW="#FFFF00"
+export HTML_RED="#FA8072"  # Salmon
 
 # Ensure non-root
 echo ${DELIMITER}
@@ -72,6 +82,12 @@ echo "<H3>BMIR Archiver System Status</H3>" >> ${OUTFILE}
 echo "<a href=\"./\">Parent Directory</a><br>" >> ${OUTFILE}
 echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OUTFILE}
 echo "<a href=\"current.mp3\">current.mp3</a>" >> ${OUTFILE}
+
+echo "<H3>Summary</H3>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
+
+echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
 
 
@@ -218,6 +234,18 @@ do
 done < "${DISK_USAGE_FILE}"
 
 
+# Write the last disk usage number into the top of the HTML file.
+if [ ${DISK_USAGE_DELTA} -ge 900 ] ; then
+	FILESYSTEM_HTML_COLOR="${HTML_GREEN}"
+elif [ ${DISK_USAGE_DELTA} -ge 600 ] ; then
+	FILESYSTEM_HTML_COLOR="${HTML_YELLOW}"
+else 
+	FILESYSTEM_HTML_COLOR="${HTML_RED}"
+fi
+sed -ie "s:${PLACEHOLDER_FILESYSTEM_COLOR}:${FILESYSTEM_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_FILESYSTEM_VALUE}:${DISK_USAGE_DELTA}:g" ${OUTFILE}
+
+
 # Analyze the last minute of the current MP3 file
 ### echo ${DELIMITER} >> ${OUTFILE}
 ### echo "Analyzing last minutes of current MP3 file..." >> ${OUTFILE}
@@ -271,6 +299,18 @@ do
 	### echo "${RMS_INT} ${SPLAT_STRING}" >> ${OUTFILE}
 	echo "${SPLAT_STRING} ${RMS_INT}" >> ${OUTFILE}	
 done < "${RMS_AMP_FILE}"
+
+
+# Write the last amplitude number into the top of the HTML file.
+if [ ${RMS_INT} -ge 120 ] ; then
+	AMPLITUDE_HTML_COLOR="${HTML_GREEN}"
+elif [ ${RMS_INT} -ge 60 ] ; then
+	AMPLITUDE_HTML_COLOR="${HTML_YELLOW}"
+else 
+	AMPLITUDE_HTML_COLOR="${HTML_RED}"
+fi
+sed -ie "s:${PLACEHOLDER_AMPLITUDE_COLOR}:${AMPLITUDE_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_AMPLITUDE_VALUE}:${RMS_INT}:g" ${OUTFILE}
 
 
 # Done
