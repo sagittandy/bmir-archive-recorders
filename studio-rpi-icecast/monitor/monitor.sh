@@ -49,6 +49,7 @@ export LOCAL_FILESYSTEM="/dev/root"
 export USB_FILESYSTEM="/media/"
 export USB_FOLDER="/media/usb/bmir"
 export RMS_AMP_FILE="rms.amplitudes.txt"
+export DISK_USAGE_FILE="disk.usage.txt"
 
 # Ensure non-root
 echo ${DELIMITER}
@@ -153,12 +154,79 @@ DATE=`date +%m%d`
 ls -lrt /media/usb/bmir/${DATE} >> ${OUTFILE}
 
 
+# Get the current mp3 folder disk usage
+### echo ${DELIMITER} >> ${OUTFILE}
+### echo "Current mp3 folder usage..." >> ${OUTFILE}
+du -sk ${USB_FOLDER} > ers.txt
+### ls -l ers.txt
+MP3_FOLDER_SIZE=`awk '{ printf $1; }' ers.txt`
+echo "MP3_FOLDER_SIZE=${MP3_FOLDER_SIZE}"
+rm ers.txt
+
+
+# Save the last several minutes of mp3 folder disk usage
+### ls -l ${DISK_USAGE_FILE}
+### cat ${DISK_USAGE_FILE} 
+tail -9 ${DISK_USAGE_FILE} > ${DISK_USAGE_FILE}.tmp 
+cp ${DISK_USAGE_FILE}.tmp ${DISK_USAGE_FILE} 
+rm ${DISK_USAGE_FILE}.tmp 
+echo ${MP3_FOLDER_SIZE} >> ${DISK_USAGE_FILE} 
+### cat ${DISK_USAGE_FILE} 
+
+
+echo "Print the last several minutes of amplitude values" 
+echo ${DELIMITER} >> ${OUTFILE}
+DISK_USAGE_LAST="0"
+DISK_USAGE_MAX="1234"
+echo "Disk usage growth in filesystem (in KB) during most recent minutes..." >> ${OUTFILE}
+while IFS= read -r line
+do
+	echo "File read loop. Entry. ---------------------------"
+	DISK_USAGE_INT=`echo ${line}` 
+	echo "Initial: DISK_USAGE_LAST=${DISK_USAGE_LAST}"
+	echo "Initial: DISK_USAGE_INT=${DISK_USAGE_INT}"
+	if [ "${DISK_USAGE_LAST}" -eq "0" ]; then
+		# Skip the initial value
+		DISK_USAGE_LAST=${DISK_USAGE_INT}
+		echo "Skipping initial value..."
+		continue
+	fi
+	echo "Processing value..." 
+	DISK_USAGE_DELTA=`echo "${DISK_USAGE_INT}-${DISK_USAGE_LAST}"|bc`
+	DISK_USAGE_LAST=${DISK_USAGE_INT}
+	echo "Delta: DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
+	if [ "${DISK_USAGE_DELTA}" -gt "${DISK_USAGE_MAX}" ] ; then 
+		echo "Clipping at DISK_USAGE_MAX ${DISK_USAGE_MAX}"
+		DISK_USAGE_DELTA=${DISK_USAGE_MAX}
+	else
+		echo "Less than ${DISK_USAGE_MAX}" 
+	fi	
+	# Create a string with length based upon DISK_USAGE_DELTA.
+	# Todo: Optimize this horrible code :-)
+	SPLAT_STRING=""
+	echo "DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
+	DISK_USAGE_SPLATS=`echo "${DISK_USAGE_DELTA}/10"|bc`
+	echo "DISK_USAGE_SPLATS=${DISK_USAGE_SPLATS}"
+	i="0"
+	while [ $i -lt "${DISK_USAGE_SPLATS}" ] ; do
+		### echo "i=${i} SPLAT_STRING=${SPLAT_STRING}"
+		SPLAT_STRING="${SPLAT_STRING}*"
+		i=$[$i+1]
+	done
+	echo "SPLAT_STRING is: ${SPLAT_STRING}"
+	echo "${SPLAT_STRING} ${DISK_USAGE_DELTA}" >> ${OUTFILE}	
+done < "${DISK_USAGE_FILE}"
+
+
 # Analyze the last minute of the current MP3 file
 ### echo ${DELIMITER} >> ${OUTFILE}
 ### echo "Analyzing last minutes of current MP3 file..." >> ${OUTFILE}
 ps -ef | grep streamripper | grep localhost > ers.txt
-MP3_FILE=`awk '{ printf $11; }' ers.txt`
+MP3_FILE=`awk '{ printf $12; }' ers.txt`
+echo "MP3_FILE=${MP3_FILE}"
+echo "Ready to tail..."
 tail -c 1000000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > current.mp3
+ls -l current.mp3
 sox current.mp3 -n stat > ers.txt 2>&1 | tail -1 
 ### cat ers.txt >> ${OUTFILE}
 RMS_AMP_FLOAT=`grep RMS ers.txt | grep amplitude | awk '{ print $3 }'`
