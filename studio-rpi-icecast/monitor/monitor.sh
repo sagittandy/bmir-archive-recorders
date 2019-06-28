@@ -136,7 +136,10 @@ DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
 # Create initial swap value file, if it does not exist.
 if [ ! -f swap.txt ] ; then
 	### echo "Creating swap.txt file with initial swap value: ${SWAP_NOW}"
-	echo "${SWAP_NOW} ${DATE_NOW}" >> swap.txt
+	KIB_MEM=`top -bn1 | grep "KiB Mem"`
+        KIB_SWAP=`top -bn1 | grep "KiB Swap"`
+        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
+        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
 fi
 
 # Read the most recent swap value from the last line of the swap value file.
@@ -149,7 +152,10 @@ if [ "${SWAP_PREV}" == "${SWAP_NOW}" ] ; then
 	echo "Ok. Swap has not grown."
 else
         ### echo "Appending swap.txt file with curent swap value: ${SWAP_NOW}"
-        echo "${SWAP_NOW} ${DATE_NOW}" >> swap.txt
+	KIB_MEM=`top -bn1 | grep "KiB Mem"`
+	KIB_SWAP=`top -bn1 | grep "KiB Swap"`
+	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
+	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
 fi
 
 # Report the last several swap changes and timestamps.
@@ -337,17 +343,18 @@ echo "RMS amplitude values of most recent minutes of current MP3 file..." >> ${O
 while IFS= read -r line
 do
 	### echo "File read loop ${RMS_AMP_FILE}. Entry. ---------------------------"
-	RMS_INT=`echo "1000*${line}/1"|bc` 
-	### echo "RMS_INT=>>>$RMS_INT<<<"
-	### echo "RMS_MAX=>>>$RMS_MAX<<<"
-	if [ "${RMS_INT}" == "" ] ; then
-		### echo "Setting RMS_INT to zero because RMS_INT is blank."
+	### echo "line=>>>${line}<<<"
+	if [ "${line}" == "" ] ; then
+		### echo "Setting RMS_INT to zero because line is blank."
                 RMS_INT="0"
-	elif [ "${RMS_INT}" -gt "${RMS_MAX}" ] ; then 
+	else
+		RMS_INT=`echo "1000*${line}/1"|bc`
+	fi
+	if [ "${RMS_INT}" -gt "${RMS_MAX}" ] ; then 
 		### echo "Clipping at RMS_MAX ${RMS_MAX}"
 		RMS_INT=${RMS_MAX}
-	###else
-	###	echo "Less than ${RMS_MAX}" 
+	### else
+	###	echo "Accepting RMS_INT ${RMS_INT}, less than RMS_MAX ${RMS_MAX}" 
 	fi	
 	# Create a string with length based upon RMS_INT.
 	# Todo: Optimize this horrible code :-)
