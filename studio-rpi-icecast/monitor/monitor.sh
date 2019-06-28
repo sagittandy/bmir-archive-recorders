@@ -52,22 +52,25 @@ export USB_FILESYSTEM="/media/"
 export USB_FOLDER="/media/usb/bmir"
 export RMS_AMP_FILE="rms.amplitudes.txt"
 export DISK_USAGE_FILE="disk.usage.txt"
+
 export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
 export PLACEHOLDER_FILESYSTEM_VALUE="PLACEHOLDER_FILESYSTEM_VALUE"
 export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
 export PLACEHOLDER_AMPLITUDE_VALUE="PLACEHOLDER_AMPLITUDE_VALUE"
+export PLACEHOLDER_SWAP_COLOR="PLACEHOLDER_SWAP_COLOR"
+export PLACEHOLDER_SWAP_VALUE="PLACEHOLDER_SWAP_VALUE"
 
 export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
 export HTML_RED="#FA8072"  # Salmon
 
 # Ensure non-root
-echo ${DELIMITER}
+### echo ${DELIMITER}
 if [[ $EUID -eq 0 ]]; then
    echo "ERROR: This script must be run as non-root." 
    exit 1
 fi
-echo "Confirmed non-root."
+### echo "Confirmed non-root."
 
 
 # Initial cleanup
@@ -86,6 +89,7 @@ echo "<a href=\"current.mp3\">current.mp3</a>" >> ${OUTFILE}
 echo "<H3>Summary</H3>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap Value: ${PLACEHOLDER_SWAP_VALUE}</b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
@@ -107,20 +111,72 @@ ps -ef | grep uploader | grep -v grep >> ${OUTFILE}
 ps -ef | grep autossh | grep -v grep >> ${OUTFILE}
 
 
-# Filesystem usage
-echo ${DELIMITER} >> ${OUTFILE}
-echo "Filesystem usage..." >> ${OUTFILE}
-df -k | grep Filesystem >> ${OUTFILE}
-df -k | grep ${LOCAL_FILESYSTEM} >> ${OUTFILE}
-df -k | grep ${USB_FILESYSTEM} >> ${OUTFILE}
-
-
 # CPU and Memory
 echo ${DELIMITER} >> ${OUTFILE}
 echo "CPU and memory..." >> ${OUTFILE}
 top -bn1 | grep Tasks >> ${OUTFILE}
 top -bn1 | grep Cpu >> ${OUTFILE}
 top -bn1 | grep KiB >> ${OUTFILE}
+
+
+# Swap Values
+
+# Get present swap value.
+SWAP_NOW=`top -bn1 | grep "KiB Swap" | awk '{print $7}'`
+### echo "SWAP_NOW=${SWAP_NOW}"
+
+# Get hundredths of seconds from the first 2 digits of nanoseconds.
+NANO_SECONDS=`date +%N`
+CENTI_SECONDS="${NANO_SECONDS:0:2}"
+
+# Format time as [year - month date - hour minute - seconds centiseconds]
+DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
+### echo "DATE_NOW=${DATE_NOW}"
+
+# Create initial swap value file, if it does not exist.
+if [ ! -f swap.txt ] ; then
+	### echo "Creating swap.txt file with initial swap value: ${SWAP_NOW}"
+	echo "${SWAP_NOW} ${DATE_NOW}" >> swap.txt
+fi
+
+# Read the most recent swap value from the last line of the swap value file.
+SWAP_PREV=`tail -1 swap.txt | awk '{print $1}'`
+### echo "SWAP_PREV=${SWAP_PREV}"
+
+# Compare the previous and current swap values.
+# If different, save current value to file.
+if [ "${SWAP_PREV}" == "${SWAP_NOW}" ] ; then
+	echo "Ok. Swap has not grown."
+else
+        ### echo "Appending swap.txt file with curent swap value: ${SWAP_NOW}"
+        echo "${SWAP_NOW} ${DATE_NOW}" >> swap.txt
+fi
+
+# Report the last several swap changes and timestamps.
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Most recent swap value changes..." >> ${OUTFILE}
+tail -9 swap.txt >> ${OUTFILE} 
+
+# Write the swap file usage number into the top of the HTML file.
+if [ ${SWAP_NOW} -gt 2048 ] ; then
+        SWAP_HTML_COLOR="${HTML_RED}"
+elif [ ${SWAP_NOW} -gt 0 ] ; then
+        SWAP_HTML_COLOR="${HTML_YELLOW}"
+else
+        SWAP_HTML_COLOR="${HTML_GREEN}"
+fi
+sed -ie "s:${PLACEHOLDER_SWAP_COLOR}:${SWAP_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_SWAP_VALUE}:${SWAP_NOW}:g" ${OUTFILE}
+
+
+
+
+# Filesystem usage
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Filesystem usage..." >> ${OUTFILE}
+df -k | grep Filesystem >> ${OUTFILE}
+df -k | grep ${LOCAL_FILESYSTEM} >> ${OUTFILE}
+df -k | grep ${USB_FILESYSTEM} >> ${OUTFILE}
 
 
 # MP3 folder size
@@ -176,7 +232,7 @@ ls -lrt /media/usb/bmir/${DATE} >> ${OUTFILE}
 du -sk ${USB_FOLDER} > ers.txt
 ### ls -l ers.txt
 MP3_FOLDER_SIZE=`awk '{ printf $1; }' ers.txt`
-echo "MP3_FOLDER_SIZE=${MP3_FOLDER_SIZE}"
+### echo "MP3_FOLDER_SIZE=${MP3_FOLDER_SIZE}"
 rm ers.txt
 
 
@@ -190,46 +246,46 @@ echo ${MP3_FOLDER_SIZE} >> ${DISK_USAGE_FILE}
 ### cat ${DISK_USAGE_FILE} 
 
 
-echo "Print the last several minutes of amplitude values" 
+### echo "Print the last several minutes of amplitude values" 
 echo ${DELIMITER} >> ${OUTFILE}
 DISK_USAGE_LAST="0"
 DISK_USAGE_MAX="1234"
 echo "Disk usage growth in filesystem (in KB) during most recent minutes..." >> ${OUTFILE}
 while IFS= read -r line
 do
-	echo "File read loop. Entry. ---------------------------"
+	### echo "File read loop ${DISK_USAGE_FILE}. Entry. ---------------------------"
 	DISK_USAGE_INT=`echo ${line}` 
-	echo "Initial: DISK_USAGE_LAST=${DISK_USAGE_LAST}"
-	echo "Initial: DISK_USAGE_INT=${DISK_USAGE_INT}"
+	### echo "Initial: DISK_USAGE_LAST=${DISK_USAGE_LAST}"
+	### echo "Initial: DISK_USAGE_INT=${DISK_USAGE_INT}"
 	if [ "${DISK_USAGE_LAST}" -eq "0" ]; then
 		# Skip the initial value
 		DISK_USAGE_LAST=${DISK_USAGE_INT}
-		echo "Skipping initial value..."
+		### echo "Skipping initial value..."
 		continue
 	fi
-	echo "Processing value..." 
+	### echo "Processing value..." 
 	DISK_USAGE_DELTA=`echo "${DISK_USAGE_INT}-${DISK_USAGE_LAST}"|bc`
 	DISK_USAGE_LAST=${DISK_USAGE_INT}
-	echo "Delta: DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
+	### echo "Delta: DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
 	if [ "${DISK_USAGE_DELTA}" -gt "${DISK_USAGE_MAX}" ] ; then 
-		echo "Clipping at DISK_USAGE_MAX ${DISK_USAGE_MAX}"
+		### echo "Clipping at DISK_USAGE_MAX ${DISK_USAGE_MAX}"
 		DISK_USAGE_DELTA=${DISK_USAGE_MAX}
-	else
-		echo "Less than ${DISK_USAGE_MAX}" 
+	### else
+	### 	echo "Less than ${DISK_USAGE_MAX}" 
 	fi	
 	# Create a string with length based upon DISK_USAGE_DELTA.
 	# Todo: Optimize this horrible code :-)
 	SPLAT_STRING=""
-	echo "DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
+	### echo "DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
 	DISK_USAGE_SPLATS=`echo "${DISK_USAGE_DELTA}/10"|bc`
-	echo "DISK_USAGE_SPLATS=${DISK_USAGE_SPLATS}"
+	### echo "DISK_USAGE_SPLATS=${DISK_USAGE_SPLATS}"
 	i="0"
 	while [ $i -lt "${DISK_USAGE_SPLATS}" ] ; do
 		### echo "i=${i} SPLAT_STRING=${SPLAT_STRING}"
 		SPLAT_STRING="${SPLAT_STRING}*"
 		i=$[$i+1]
 	done
-	echo "SPLAT_STRING is: ${SPLAT_STRING}"
+	### echo "SPLAT_STRING is: ${SPLAT_STRING}"
 	echo "${SPLAT_STRING} ${DISK_USAGE_DELTA}" >> ${OUTFILE}	
 done < "${DISK_USAGE_FILE}"
 
@@ -251,8 +307,8 @@ sed -ie "s:${PLACEHOLDER_FILESYSTEM_VALUE}:${DISK_USAGE_DELTA}:g" ${OUTFILE}
 ### echo "Analyzing last minutes of current MP3 file..." >> ${OUTFILE}
 ps -ef | grep streamripper | grep localhost > ers.txt
 MP3_FILE=`awk '{ printf $12; }' ers.txt`
-echo "MP3_FILE=${MP3_FILE}"
-echo "Ready to tail..."
+### echo "MP3_FILE=${MP3_FILE}"
+### echo "Ready to tail..."
 tail -c 1000000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > current.mp3
 ls -l current.mp3
 sox current.mp3 -n stat > ers.txt 2>&1 | tail -1 
@@ -266,36 +322,44 @@ RMS_AMP_FLOAT=`grep RMS ers.txt | grep amplitude | awk '{ print $3 }'`
 ### cat ${RMS_AMP_FILE}
 tail -29 ${RMS_AMP_FILE} > ${RMS_AMP_FILE}.tmp
 cp ${RMS_AMP_FILE}.tmp ${RMS_AMP_FILE}
+### echo "RMS_AMP_FLOAT=$RMS_AMP_FLOAT"
 echo ${RMS_AMP_FLOAT} >> ${RMS_AMP_FILE}
 ### ls -l ${RMS_AMP_FILE}
 ### cat ${RMS_AMP_FILE}
 
 
-echo "Print the last several minutes of amplitude values" 
+### echo "Print the last several minutes of amplitude values" 
 echo ${DELIMITER} >> ${OUTFILE}
 RMS_MAX="300"
+
+
 echo "RMS amplitude values of most recent minutes of current MP3 file..." >> ${OUTFILE}
 while IFS= read -r line
 do
+	### echo "File read loop ${RMS_AMP_FILE}. Entry. ---------------------------"
 	RMS_INT=`echo "1000*${line}/1"|bc` 
-	echo $RMS_INT
-	if [ "${RMS_INT}" -gt "${RMS_MAX}" ] ; then 
-		echo "Clipping at RMS_MAX ${RMS_MAX}"
+	### echo "RMS_INT=>>>$RMS_INT<<<"
+	### echo "RMS_MAX=>>>$RMS_MAX<<<"
+	if [ "${RMS_INT}" == "" ] ; then
+		### echo "Setting RMS_INT to zero because RMS_INT is blank."
+                RMS_INT="0"
+	elif [ "${RMS_INT}" -gt "${RMS_MAX}" ] ; then 
+		### echo "Clipping at RMS_MAX ${RMS_MAX}"
 		RMS_INT=${RMS_MAX}
-	else
-		echo "Less than ${RMS_MAX}" 
+	###else
+	###	echo "Less than ${RMS_MAX}" 
 	fi	
 	# Create a string with length based upon RMS_INT.
 	# Todo: Optimize this horrible code :-)
 	SPLAT_STRING=""
 	RMS_INT_HALF=`echo "${RMS_INT}/2"|bc`
-	echo "RMS_INT_HALF=${RMS_INT_HALF}"
+	### echo "RMS_INT_HALF=${RMS_INT_HALF}"
 	i="0"
 	while [ $i -lt "${RMS_INT_HALF}" ] ; do
 		SPLAT_STRING="${SPLAT_STRING}*"
 		i=$[$i+1]
 	done
-	echo "${SPLAT_STRING}"
+	### echo "${SPLAT_STRING}"
 	### echo "${RMS_INT} ${SPLAT_STRING}" >> ${OUTFILE}
 	echo "${SPLAT_STRING} ${RMS_INT}" >> ${OUTFILE}	
 done < "${RMS_AMP_FILE}"

@@ -239,6 +239,7 @@ apt-get -y install autossh
 apt-get -y install streamripper
 apt-get -y install usbmount
 apt-get -y install bc
+apt-get -y install sox libsox-fmt-mp3
 # Do not install UFW without configuring, lest we get locked out.
 
 
