@@ -53,6 +53,10 @@ export USB_FOLDER="/media/usb/bmir"
 export RMS_AMP_FILE="rms.amplitudes.txt"
 export DISK_USAGE_FILE="disk.usage.txt"
 
+export PLACEHOLDER_ICECAST_COLOR="PLACEHOLDER_ICECAST_COLOR"
+export PLACEHOLDER_ICECAST_VALUE="PLACEHOLDER_ICECAST_VALUE"
+export PLACEHOLDER_STREAMRIPPER_COLOR="PLACEHOLDER_STREAMRIPPER_COLOR"
+export PLACEHOLDER_STREAMRIPPER_VALUE="PLACEHOLDER_STREAMRIPPER_VALUE"
 export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
 export PLACEHOLDER_FILESYSTEM_VALUE="PLACEHOLDER_FILESYSTEM_VALUE"
 export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
@@ -87,9 +91,11 @@ echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OU
 echo "<a href=\"current.mp3\">current.mp3</a>" >> ${OUTFILE}
 
 echo "<H3>Summary</H3>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap Value: ${PLACEHOLDER_SWAP_VALUE}</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
@@ -109,6 +115,38 @@ ps -ef | grep streamripper | grep -v grep >> ${OUTFILE}
 ps -ef | grep icecast | grep -v grep >> ${OUTFILE}
 ps -ef | grep uploader | grep -v grep >> ${OUTFILE}
 ps -ef | grep autossh | grep -v grep >> ${OUTFILE}
+
+
+# Highlight running processes at top of web page.
+
+ICECAST_RUNNING=`ps -ef | grep icecast | grep -v grep`
+### echo "ICECAST_RUNNING=>>>${ICECAST_RUNNING}"
+if [ -z "${ICECAST_RUNNING}" ] ; then
+	ICECAST_HTML_COLOR="${HTML_RED}"
+	ICECAST_VALUE="Stopped"
+else
+	ICECAST_HTML_COLOR="${HTML_GREEN}"
+	ICECAST_VALUE="Running"
+fi
+### echo "ICECAST_HTML_COLOR=${ICECAST_HTML_COLOR}"
+### echo "ICECAST_VALUE=${ICECAST_VALUE}"
+sed -ie "s:${PLACEHOLDER_ICECAST_COLOR}:${ICECAST_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_ICECAST_VALUE}:${ICECAST_VALUE}:g" ${OUTFILE}
+
+STREAMRIPPER_RUNNING=`ps -ef | grep streamripper | grep -v grep`
+### echo "STREAMRIPPER_RUNNING=>>>${STREAMRIPPER_RUNNING}"
+if [ -z "${STREAMRIPPER_RUNNING}" ] ; then
+	STREAMRIPPER_HTML_COLOR="${HTML_RED}"
+	STREAMRIPPER_VALUE="Stopped"
+else
+	STREAMRIPPER_HTML_COLOR="${HTML_GREEN}"
+	STREAMRIPPER_VALUE="Running"
+fi
+### echo "STREAMRIPPER_HTML_COLOR=${STREAMRIPPER_HTML_COLOR}"
+### echo "STREAMRIPPER_VALUE=${STREAMRIPPER_VALUE}"
+sed -ie "s:${PLACEHOLDER_STREAMRIPPER_COLOR}:${STREAMRIPPER_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_STREAMRIPPER_VALUE}:${STREAMRIPPER_VALUE}:g" ${OUTFILE}
+
 
 
 # CPU and Memory
