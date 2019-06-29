@@ -1,19 +1,19 @@
 #!/bin/bash
 #-----------------------------------------------------------------------
-# Sets up uploader.service on RPI Raspbian Stretch Lite
+# Sets up freemem.service on RPI Raspbian Stretch Lite
 #
 # Usage: 
 #	Run this script as root: 
 #
-#	sudo ./setup.uploader.timer.sh
+#	sudo ./setup.freemem.timer.sh
 #
 #
-# AD 2019-0506-2356 Copyright BMIR 2019
+# AD 2019-0629-1700 Copyright BMIR 2019
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
 
 
-export SERVICE="uploader"
+export SERVICE="freemem"
 
 
 echo ${DELIMITER}
@@ -27,7 +27,7 @@ echo "Confirmed user root."
 
 echo ${DELIMITER}
 echo "Ensuring required prereq files..."
-for FILENAME in ${SERVICE}.service ${SERVICE}.timer ${SERVICE}.sh ${SERVICE}.py ${SERVICE}.json 
+for FILENAME in ${SERVICE}.service ${SERVICE}.timer ${SERVICE}.sh
 do
 	ls ${FILENAME}
 	rc=$?
@@ -42,7 +42,7 @@ echo "ok"
 echo ${DELIMITER}
 echo "Copying service scripts to bin directory..."
 sleep 3
-for FILENAME in ${SERVICE}.sh ${SERVICE}.py ${SERVICE}.json
+for FILENAME in ${SERVICE}.sh
 do
         cp ${FILENAME} /home/pi/bin/
         rc=$?

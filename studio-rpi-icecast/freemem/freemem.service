@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs freemem
+Wants=freemem.timer
+
+[Service]
+ExecStart=/home/pi/bin/freemem.sh
+WorkingDirectory=/home/pi/bin
+User=root
+Group=root
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=freemembmir

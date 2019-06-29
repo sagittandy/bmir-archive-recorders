@@ -63,6 +63,8 @@ export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
 export PLACEHOLDER_AMPLITUDE_VALUE="PLACEHOLDER_AMPLITUDE_VALUE"
 export PLACEHOLDER_SWAP_COLOR="PLACEHOLDER_SWAP_COLOR"
 export PLACEHOLDER_SWAP_VALUE="PLACEHOLDER_SWAP_VALUE"
+export PLACEHOLDER_BUFF_CACHE_COLOR="PLACEHOLDER_BUFF_CACHE_COLOR"
+export PLACEHOLDER_BUFF_CACHE_VALUE="PLACEHOLDER_BUFF_CACHE_VALUE"
 
 export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
@@ -95,6 +97,7 @@ echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast 
 echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Details</H3>" >> ${OUTFILE}
@@ -133,7 +136,7 @@ fi
 sed -ie "s:${PLACEHOLDER_ICECAST_COLOR}:${ICECAST_HTML_COLOR}:g" ${OUTFILE}
 sed -ie "s:${PLACEHOLDER_ICECAST_VALUE}:${ICECAST_VALUE}:g" ${OUTFILE}
 
-STREAMRIPPER_RUNNING=`ps -ef | grep streamripper | grep -v grep`
+STREAMRIPPER_RUNNING=`ps -ef | grep streamripper | grep localhost | grep -v grep`
 ### echo "STREAMRIPPER_RUNNING=>>>${STREAMRIPPER_RUNNING}"
 if [ -z "${STREAMRIPPER_RUNNING}" ] ; then
 	STREAMRIPPER_HTML_COLOR="${HTML_RED}"
@@ -420,6 +423,28 @@ else
 fi
 sed -ie "s:${PLACEHOLDER_AMPLITUDE_COLOR}:${AMPLITUDE_HTML_COLOR}:g" ${OUTFILE}
 sed -ie "s:${PLACEHOLDER_AMPLITUDE_VALUE}:${RMS_INT}:g" ${OUTFILE}
+
+
+# Append recent buffer/cache memory sizes to bottom of HTML file.
+if [ -f freemem.txt ] ; then
+	echo ${DELIMITER} >> ${OUTFILE}
+	echo "Buffer/cache memory sizes in most recent hours..." >> ${OUTFILE}
+	tail -9 freemem.txt >> ${OUTFILE} 
+fi
+
+
+# Write the current buffer/cache memory size to top of HTML file.
+BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
+echo "BUFF_CACHE=${BUFF_CACHE}"
+if [ ${BUFF_CACHE} -gt 300000 ] ; then
+	BUFF_CACHE_HTML_COLOR="${HTML_RED}"
+elif [ ${BUFF_CACHE} -ge 200000 ] ; then
+	BUFF_CACHE_HTML_COLOR="${HTML_YELLOW}"
+else 
+	BUFF_CACHE_HTML_COLOR="${HTML_GREEN}"
+fi
+sed -ie "s:${PLACEHOLDER_BUFF_CACHE_COLOR}:${BUFF_CACHE_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_BUFF_CACHE_VALUE}:${BUFF_CACHE}:g" ${OUTFILE}
 
 
 # Done

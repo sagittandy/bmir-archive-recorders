@@ -261,6 +261,7 @@ def analyze_files():
 				continue
 
 			# HACK TECHNIQUE!!!  Ignore currently in-process recording file.  TODO FIX THIS!
+			# TODO: Consume new parameter passed-in by uploader.sh: CURRENT_MP3_FILE_PREFIX
 			if 30 > len(local_mp3):
 				sop(3,m,'Skip currently recording file. %s' % (local_mp3))
 				continue

@@ -1,0 +1,11 @@
+[Unit]
+Description=Run freemem at 10 mins before every hour
+Requires=freemem.service
+
+[Timer]
+Unit=freemem.timer
+OnCalendar=*-*-* *:50:00
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
