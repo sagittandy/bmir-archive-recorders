@@ -283,7 +283,7 @@ rm ers.txt
 # Save the last several minutes of mp3 folder disk usage
 ### ls -l ${DISK_USAGE_FILE}
 ### cat ${DISK_USAGE_FILE} 
-tail -9 ${DISK_USAGE_FILE} > ${DISK_USAGE_FILE}.tmp 
+tail -29 ${DISK_USAGE_FILE} > ${DISK_USAGE_FILE}.tmp 
 cp ${DISK_USAGE_FILE}.tmp ${DISK_USAGE_FILE} 
 rm ${DISK_USAGE_FILE}.tmp 
 echo ${MP3_FOLDER_SIZE} >> ${DISK_USAGE_FILE} 
