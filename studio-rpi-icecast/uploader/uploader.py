@@ -195,12 +195,12 @@ def get_local_file_md5sum(fully_qualified_filename):
 	return exitcode, md5sum
 
 
-def analyze_files():
+def analyze_files(currentMp3FilePrefix):
 	'''Reads config file, looks at existing local files,
 	then uploads any files which have not been uploaded.'''
 	m = 'analyze_files'
 
-	sop(3,m,'Entry.')
+	sop(3,m,'Entry. currentMp3FilePrefix=%s' % (currentMp3FilePrefix))
 
 	# Ensure config file exists.
 	if not os.path.isfile(CONFIG_FILE):
@@ -260,9 +260,9 @@ def analyze_files():
 				sop(3,m,'Not mp3. Continuing.')
 				continue
 
-			# HACK TECHNIQUE!!!  Ignore currently in-process recording file.  TODO FIX THIS!
-			# TODO: Consume new parameter passed-in by uploader.sh: CURRENT_MP3_FILE_PREFIX
-			if 30 > len(local_mp3):
+			# Ignore currently in-process recording file.
+			# Evaluate parameter passed-in by uploader.sh: CURRENT_MP3_FILE_PREFIX
+			if local_mp3 == currentMp3FilePrefix + '.mp3':
 				sop(3,m,'Skip currently recording file. %s' % (local_mp3))
 				continue
 
@@ -357,5 +357,18 @@ m = 'UNIT_TEST'
 #sop(5,m,'exitcode=%i' % (exitcode))
 #sop(5,m,'md5sum=%s' % (md5sum))
 
-analyze_files()
+#-----------------------------------------
+# Main.  The program starts here!
+#-----------------------------------------
+m = "main"
+sop(5,m,"Entry.")
+
+# Parse parms
+currentMp3FilePrefix = "UNDEFINED"
+if 2 == len(sys.argv):
+	currentMp3FilePrefix = sys.argv[1]
+	sop(5,m,'Parsed currentMp3FilePrefix=%s' % (currentMp3FilePrefix))
+
+# Go!
+analyze_files(currentMp3FilePrefix)
 
