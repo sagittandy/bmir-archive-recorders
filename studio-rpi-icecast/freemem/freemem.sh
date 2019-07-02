@@ -49,7 +49,6 @@ echo "DATE_NOW=${DATE_NOW}"
 # Log buffer/cache value before clearing.
 BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
 echo "BUFF_CACHE=${BUFF_CACHE}"
-echo "${DATE_NOW} ${BUFF_CACHE}" >> ${OUTFILE}
 
 
 if [ ${BUFF_CACHE} -gt 300000 ] ; then
@@ -59,9 +58,11 @@ if [ ${BUFF_CACHE} -gt 300000 ] ; then
 	echo 1 > /proc/sys/vm/drop_caches
 
 	# Log buffer/cache value after clearing.
-	BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
-	echo "BUFF_CACHE=${BUFF_CACHE}"
-	echo "${DATE_NOW} ${BUFF_CACHE} Cleared." >> ${OUTFILE}
+	BUFF_CACHE_NEW=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
+	echo "BUFF_CACHE_NEW=${BUFF_CACHE_NEW} <-- Cleared."
+	echo "${DATE_NOW} ${BUFF_CACHE} ${BUFF_CACHE_NEW} Cleared." >> ${OUTFILE}
+else 
+	echo "${DATE_NOW} ${BUFF_CACHE}" >> ${OUTFILE}
 fi
 
 

@@ -429,7 +429,7 @@ sed -ie "s:${PLACEHOLDER_AMPLITUDE_VALUE}:${RMS_INT}:g" ${OUTFILE}
 if [ -f freemem.txt ] ; then
 	echo ${DELIMITER} >> ${OUTFILE}
 	echo "Buffer/cache memory sizes in most recent hours..." >> ${OUTFILE}
-	tail -9 freemem.txt >> ${OUTFILE} 
+	tail -29 freemem.txt >> ${OUTFILE} 
 fi
 
 

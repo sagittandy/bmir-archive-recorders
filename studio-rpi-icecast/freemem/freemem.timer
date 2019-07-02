@@ -4,7 +4,7 @@ Requires=freemem.service
 
 [Timer]
 Unit=freemem.timer
-OnCalendar=*-*-* *:50:00
+OnCalendar=*:5,25,45
 AccuracySec=1s
 
 [Install]
