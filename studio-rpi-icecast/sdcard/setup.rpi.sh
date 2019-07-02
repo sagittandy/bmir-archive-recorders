@@ -60,7 +60,7 @@ echo ${DELIMITER}
 echo "Getting remote_port."
 sleep 3
 REMOTE_PORT=${3}
-if [ "10020" != REMOTE_PORT ] && [ "10021" != REMOTE_PORT ] && [ "10022" != REMOTE_PORT ] && [ "10023" != REMOTE_PORT ] && [ "10024" != REMOTE_PORT ] && [ "10025" != REMOTE_PORT ] && [ "10026" != REMOTE_PORT ] && [ "10027" != REMOTE_PORT ] && [ "10028" != REMOTE_PORT ] && [ "10029" != REMOTE_PORT ] ; then
+if [ "10020" != ${REMOTE_PORT} ] && [ "10021" != ${REMOTE_PORT} ] && [ "10022" != ${REMOTE_PORT} ] && [ "10023" != ${REMOTE_PORT} ] && [ "10024" != ${REMOTE_PORT} ] && [ "10025" != ${REMOTE_PORT} ] && [ "10026" != ${REMOTE_PORT} ] && [ "10027" != ${REMOTE_PORT} ] && [ "10028" != ${REMOTE_PORT} ] && [ "10029" != ${REMOTE_PORT} ] ; then
 	echo "ERROR ${rc} Invalid port number. REMOTE_PORT must be 10020-10029. Actual value: ${REMOTE_PORT}"
 	exit 1
 fi
