@@ -10,6 +10,8 @@
 #	where
 #		<PASSWORD> is used for both pi and root
 #		<HOSTNAME> is the new hostname of the RPI
+#		<REMOTE_PORT> is the remote port number used by autossh
+#			10020 through 10029 inclusive
 #
 # Run as root.
 #
@@ -33,8 +35,8 @@ echo "Confirmed user root."
 echo ${DELIMITER}
 echo "Checking parameter count..."
 sleep 3
-if [ $# -ne 2 ] ; then
-	echo "USER ERROR: Wrong number of parameters. Enter ./setup.rpi.sh <PASSWORD> <HOSTNAME> "
+if [ $# -ne 3 ] ; then
+	echo "USER ERROR: Wrong number of parameters. Enter ./setup.rpi.sh <PASSWORD> <HOSTNAME> <REMOTE_PORT (10020-10029)>"
 	exit 9
 fi
 echo "Confirmed parameter count."
@@ -52,6 +54,17 @@ echo "Getting hostname."
 sleep 3
 HOSTNAME=${2}
 echo "HOSTNAME=${HOSTNAME}"
+
+
+echo ${DELIMITER}
+echo "Getting remote_port."
+sleep 3
+REMOTE_PORT=${3}
+if [ "10020" != REMOTE_PORT ] && [ "10021" != REMOTE_PORT ] && [ "10022" != REMOTE_PORT ] && [ "10023" != REMOTE_PORT ] && [ "10024" != REMOTE_PORT ] && [ "10025" != REMOTE_PORT ] && [ "10026" != REMOTE_PORT ] && [ "10027" != REMOTE_PORT ] && [ "10028" != REMOTE_PORT ] && [ "10029" != REMOTE_PORT ] ; then
+	echo "ERROR ${rc} Invalid port number. REMOTE_PORT must be 10020-10029. Actual value: ${REMOTE_PORT}"
+	exit 1
+fi
+echo "REMOTE_PORT=${REMOTE_PORT}"
 
 
 echo ${DELIMITER}
@@ -93,6 +106,14 @@ fi
 echo ${DELIMITER}
 echo "Changing hostname in /etc/hosts..."
 sleep 3
+# Ensure sed string is present.
+grep "raspberrypi" /etc/hosts
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} /etc/hosts does not contain 'raspberrypi' before sed."
+	exit 1
+fi
+# Do it
 sed -ie "s:raspberrypi:${HOSTNAME}:g" /etc/hosts
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -105,6 +126,14 @@ cat /etc/hosts
 echo ${DELIMITER}
 echo "Changing hostname in /etc/hostname..."
 sleep 3
+# Ensure sed string is present.
+grep "raspberrypi" /etc/hostname
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} /etc/hostname does not contain 'raspberrypi' before sed."
+	exit 1
+fi
+# Do it
 sed -ie "s:raspberrypi:${HOSTNAME}:g" /etc/hostname 
 rc=$?
 if [ 0 != ${rc} ] ; then
@@ -182,6 +211,46 @@ chown -R pi /home/pi/studio-rpi-icecast
 chgrp -R pi /home/pi/studio-rpi-icecast
 ls -l /home/pi/
 echo "ok"
+
+
+echo ${DELIMITER}
+echo "Ensuring more required prereq files..."
+sleep 3
+for FILENAME in /home/pi/studio-rpi-icecast/autossh/autossh.service
+do
+	ls ${FILENAME}
+	rc=$?
+	if [ 0 != ${rc} ] ; then
+		echo "ERROR ${rc} Required prereq file does not exist: ${FILENAME}"
+		exit 1
+	fi
+done
+
+
+echo ${DELIMITER}
+echo "Changing remote_port value in file autossh.service..."
+sleep 3
+AUTOSSH_FILE="/home/pi/studio-rpi-icecast/autossh/autossh.service"
+# Ensure sed string is present.
+grep "NR 10022" ${AUTOSSH_FILE}
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} Autossh file does not contain 'NR 10022' before sed."
+	exit 1
+fi
+sed -ie "s:NR 10022:NR ${REMOTE_PORT}:g" ${AUTOSSH_FILE}
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} Could not set remote_port in /home/pi/studio-rpi-icecast/autossh/autossh.service."
+        exit 1
+fi
+grep "NR ${REMOTE_PORT}" ${AUTOSSH_FILE}
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} Autossh file does not contain 'NR ${REMOTE_PORT}' after sed."
+	exit 1
+fi
+cat /etc/hostname
 
 
 echo ${DELIMITER}
