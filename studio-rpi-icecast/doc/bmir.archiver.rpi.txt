@@ -107,7 +107,7 @@ Confirm SSH works to both interfaces.
 - - - - -
 As ROOT user on your RPI, run this script
 
-	/boot/studio-rpi-icecast/sdcard/setup.rpi.sh <PASSWORD> <HOSTNAME> <PORT_NUMBER> <REMOTE_PORT>
+	/boot/studio-rpi-icecast/sdcard/setup.rpi.sh <PASSWORD> <HOSTNAME> <REMOTE_PORT>
 
 	where
 		<PASSWORD> will be used for both root and pi
