@@ -438,7 +438,7 @@ BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
 echo "BUFF_CACHE=${BUFF_CACHE}"
 if [ ${BUFF_CACHE} -gt 400000 ] ; then
 	BUFF_CACHE_HTML_COLOR="${HTML_RED}"
-elif [ ${BUFF_CACHE} -gt 300000 ] ; then
+elif [ ${BUFF_CACHE} -gt 330000 ] ; then
 	BUFF_CACHE_HTML_COLOR="${HTML_YELLOW}"
 else 
 	BUFF_CACHE_HTML_COLOR="${HTML_GREEN}"
