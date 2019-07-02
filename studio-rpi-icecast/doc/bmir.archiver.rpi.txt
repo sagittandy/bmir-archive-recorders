@@ -107,44 +107,26 @@ Confirm SSH works to both interfaces.
 - - - - -
 As ROOT user on your RPI, run this script
 
-	/boot/studio-rpi-icecast/sdcard/setup.rpi.sh <PASSWORD> <HOSTNAME>
+	/boot/studio-rpi-icecast/sdcard/setup.rpi.sh <PASSWORD> <HOSTNAME> <PORT_NUMBER> <REMOTE_PORT>
 
 	where
 		<PASSWORD> will be used for both root and pi
 		<HOSTNAME> will be the hostname of the RPI
+		<REMOTE_PORT> is the SSh port number used by autossh (10020 thru 10029 inclusive)
 
 After successful execution, reboot via shutdown -r now.
 
 SSH in again.  Confirm no further OS updates.
 
 - - - - -
-As user ROOT on the RPI, run the following scripts and manual commands...
+As user ROOT on the RPI, run the following script...
 
-	cd /home/pi/studio-rpi-icecast/
+	cd /home/pi/studio-rpi-icecast/post.setup.rpi.sh
 
-	apt-get -y install ufw
-	./ufw/ufw.setup.sh
-
-	./usbmount/install.configure.usbmount.sh
-	mkdir /media/usb/bmir
-
-	./autossh/install.autossh.sh
-	./autossh/setup.autossh.service.sh
-
-	./icecast2/install.icecast2.sh
-	./icecast2/configure.icecast2.sh
-	./icecast2/setup.icecast.service.sh
-
-	./streamripper/install.streamripper.sh
-	./streamripper/setup.streamripper.service.sh
-
-	./monitor/setup.monitor.timer.sh
-
-	./uploader/setup.uploader.timer.sh
-
-Note: the liquidsoap scripts are not used in this RPI.
-
+- - - - -
 After completion, please reboot via shutdown -r now.
+
+The complete archiver software package should start and run successfully!
 
 - - - - -
 Test 
@@ -157,19 +139,13 @@ Test
 		ensure MP3s uploaded every 2 hours to dobmir
 	Autossh
 		ensure you can SSH to the cloud server dobmir into the RPI
-
+ 
 
 - - - - -
 Production setup:
-	Redundancy: Prepare two complete RPIs in secure enclosures (ammo boxes)
+	Redundancy: Prepare several SDCARDs with different hostnames/remote port numbers.
 	Power: Use a commercial 120vac UPS, with Canakit's 2.5A USB power adapter.
 
-TODOs: 
--->	Create one master bash files to run all the scripts listed above on RPI.
-	Optional? Suppress Wi-Fi.
-	Prepare multiple fresh new microSDs and verify they can be swapped in.
-	Research RPI Filesystem:
-		Minimize spurious writes to the RPI SDCard.  Do not make totally read-only.
 
 
 
