@@ -320,9 +320,9 @@ apt-get -y install icecast2
 
 
 echo ${DELIMITER}
-echo "Setting vm.swappiness = 10 in /etc/sysctl.conf..."
-# Info: Default is 100, very swappy.  Minimum is 1, almost never swaps.
-# 10 is a good compromise, only swaps in case truly no more phys memory.
+echo "Setting vm.swappiness = 1 and vm.vfs_cache_pressure = 50 in /etc/sysctl.conf..."
+# swappiness: Default is 100, very swappy.  Minimum is 1, almost never swaps.
+# cache_pressure: default 100, low tendency to reclaim disk cache.  50 is more likely to reclaim.
 sleep 3
 SYSCTL_CONFIG_FILE="/etc/sysctl.conf"
 ls ${SYSCTL_CONFIG_FILE}
@@ -331,13 +331,22 @@ if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not exist."
 	exit 1
 fi
-# Append the string
-SWAPPINESS="vm.swappiness = 10"
+# Append the string swappiness
+SWAPPINESS="vm.swappiness = 1"
 echo "${SWAPPINESS}" >> /etc/sysctl.conf
 # Check for the string
 /bin/grep "${SWAPPINESS}" ${SYSCTL_CONFIG_FILE}
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${SWAPPINESS}."
+	exit 1
+fi
+# Append the string cache_pressure
+CACHE_PRESSURE="vm.vfs_cache_pressure = 50"
+echo "${CACHE_PRESSURE}" >> /etc/sysctl.conf
+# Check for the string
+/bin/grep "${CACHE_PRESSURE}" ${SYSCTL_CONFIG_FILE}
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${CACHE_PRESSURE}."
 	exit 1
 fi
 
