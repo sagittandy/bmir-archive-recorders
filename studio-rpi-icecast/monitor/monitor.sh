@@ -113,6 +113,9 @@ echo "BMIR Archiver System Status" >> ${OUTFILE}
 date >> ${OUTFILE}
 hostname >> ${OUTFILE}
 uptime >> ${OUTFILE}
+sysctl -a | grep vm.swappiness >> ${OUTFILE}
+sysctl -a | grep vm.vm.vfs_cache_pressure >> ${OUTFILE}
+
 
 # Running processes
 echo ${DELIMITER} >> ${OUTFILE}
