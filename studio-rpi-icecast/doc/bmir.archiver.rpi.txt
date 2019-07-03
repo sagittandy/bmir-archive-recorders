@@ -16,7 +16,7 @@ Prereqs
 
 Download latest raspbian lite zip file to linux laptop
 	From: https://www.raspberrypi.org/downloads/raspbian/
-	Example: 2018-11-13-raspbian-stretch-lite.zip
+	Example: 2019-04-08-raspbian-stretch-lite.zip
 
 	Do not unzip
 

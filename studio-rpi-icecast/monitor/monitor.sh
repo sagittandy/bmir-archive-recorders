@@ -63,8 +63,10 @@ export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
 export PLACEHOLDER_AMPLITUDE_VALUE="PLACEHOLDER_AMPLITUDE_VALUE"
 export PLACEHOLDER_SWAP_COLOR="PLACEHOLDER_SWAP_COLOR"
 export PLACEHOLDER_SWAP_VALUE="PLACEHOLDER_SWAP_VALUE"
-export PLACEHOLDER_BUFF_CACHE_COLOR="PLACEHOLDER_BUFF_CACHE_COLOR"
-export PLACEHOLDER_BUFF_CACHE_VALUE="PLACEHOLDER_BUFF_CACHE_VALUE"
+#export PLACEHOLDER_BUFF_CACHE_COLOR="PLACEHOLDER_BUFF_CACHE_COLOR"
+#export PLACEHOLDER_BUFF_CACHE_VALUE="PLACEHOLDER_BUFF_CACHE_VALUE"
+export PLACEHOLDER_AVAIL_COLOR="PLACEHOLDER_AVAIL_COLOR"
+export PLACEHOLDER_AVAIL_VALUE="PLACEHOLDER_AVAIL_VALUE"
 
 export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
@@ -97,7 +99,8 @@ echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast 
 echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
+#echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} Mb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Details</H3>" >> ${OUTFILE}
@@ -426,25 +429,48 @@ sed -ie "s:${PLACEHOLDER_AMPLITUDE_VALUE}:${RMS_INT}:g" ${OUTFILE}
 
 
 # Append recent buffer/cache memory sizes to bottom of HTML file.
-if [ -f freemem.txt ] ; then
-	echo ${DELIMITER} >> ${OUTFILE}
-	echo "Buffer/cache memory sizes in most recent hours..." >> ${OUTFILE}
-	tail -29 freemem.txt >> ${OUTFILE} 
-fi
+#if [ -f freemem.txt ] ; then
+#	echo ${DELIMITER} >> ${OUTFILE}
+#	echo "Buffer/cache memory sizes in most recent hours..." >> ${OUTFILE}
+#	tail -29 freemem.txt >> ${OUTFILE} 
+#fi
 
 
 # Write the current buffer/cache memory size to top of HTML file.
-BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
-echo "BUFF_CACHE=${BUFF_CACHE}"
-if [ ${BUFF_CACHE} -gt 400000 ] ; then
-	BUFF_CACHE_HTML_COLOR="${HTML_RED}"
-elif [ ${BUFF_CACHE} -gt 330000 ] ; then
-	BUFF_CACHE_HTML_COLOR="${HTML_YELLOW}"
+#BUFF_CACHE=`top -bn1 | grep "KiB Mem" | awk '{print $10}'`
+#echo "BUFF_CACHE=${BUFF_CACHE}"
+#if [ ${BUFF_CACHE} -gt 400000 ] ; then
+#	BUFF_CACHE_HTML_COLOR="${HTML_RED}"
+#elif [ ${BUFF_CACHE} -gt 330000 ] ; then
+#	BUFF_CACHE_HTML_COLOR="${HTML_YELLOW}"
+#else 
+#	BUFF_CACHE_HTML_COLOR="${HTML_GREEN}"
+#fi
+#sed -ie "s:${PLACEHOLDER_BUFF_CACHE_COLOR}:${BUFF_CACHE_HTML_COLOR}:g" ${OUTFILE}
+#sed -ie "s:${PLACEHOLDER_BUFF_CACHE_VALUE}:${BUFF_CACHE}:g" ${OUTFILE}
+
+
+# Append current available memory to bottom of log file
+AVAIL_MEM=`free -m | grep "Mem:" | awk '{print $7}'`
+echo "AVAIL_MEM=${AVAIL_MEM}"
+echo "${DATE_NOW} ${AVAIL_MEM}" >> availmem.txt
+
+# Append recent Available memory sizes to bottom of HTML file.
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Available memory sizes in most recent minutes..." >> ${OUTFILE}
+tail -29 availmem.txt >> ${OUTFILE} 
+
+# Write the currently available memory size to top of HTML file.
+if [ ${AVAIL_MEM} -gt 300 ] ; then
+	AVAIL_HTML_COLOR="${HTML_GREEN}"
+elif [ ${AVAIL_MEM} -gt 100 ] ; then
+	AVAIL_HTML_COLOR="${HTML_YELLOW}"
 else 
-	BUFF_CACHE_HTML_COLOR="${HTML_GREEN}"
+	AVAIL_HTML_COLOR="${HTML_RED}"
 fi
-sed -ie "s:${PLACEHOLDER_BUFF_CACHE_COLOR}:${BUFF_CACHE_HTML_COLOR}:g" ${OUTFILE}
-sed -ie "s:${PLACEHOLDER_BUFF_CACHE_VALUE}:${BUFF_CACHE}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_AVAIL_COLOR}:${AVAIL_HTML_COLOR}:g" ${OUTFILE}
+sed -ie "s:${PLACEHOLDER_AVAIL_VALUE}:${AVAIL_MEM}:g" ${OUTFILE}
+
 
 
 # Done

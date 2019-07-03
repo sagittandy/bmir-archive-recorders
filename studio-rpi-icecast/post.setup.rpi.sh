@@ -235,17 +235,18 @@ cd -
 
 
 #-----------------------------------------------------------------------
-echo ${DELIMITER}
-echo "Setting up freemem systemd service..."
-sleep 3
-cd freemem
-./setup.freemem.timer.sh
-rc=$?
-if [ 0 != ${rc} ] ; then
-        echo "ERROR ${rc} Could not set up freemem systemd timer."
-        exit 1
-fi
-cd -
+# AD 2019-0702 This seems unnecessary after setting vm.swappiness = 10
+#echo ${DELIMITER}
+#echo "Setting up freemem systemd service..."
+#sleep 3
+#cd freemem
+#./setup.freemem.timer.sh
+#rc=$?
+#if [ 0 != ${rc} ] ; then
+#        echo "ERROR ${rc} Could not set up freemem systemd timer."
+#        exit 1
+#fi
+#cd -
 
 
 echo "Exit. Success!...  Please reboot:  shutdown -r now"

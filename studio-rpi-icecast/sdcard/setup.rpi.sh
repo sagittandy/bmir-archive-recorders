@@ -320,6 +320,29 @@ apt-get -y install icecast2
 
 
 echo ${DELIMITER}
+echo "Setting vm.swappiness = 10 in /etc/sysctl.conf..."
+# Info: Default is 100, very swappy.  Minimum is 1, almost never swaps.
+# 10 is a good compromise, only swaps in case truly no more phys memory.
+sleep 3
+SYSCTL_CONFIG_FILE="/etc/sysctl.conf"
+ls ${SYSCTL_CONFIG_FILE}
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not exist."
+	exit 1
+fi
+# Append the string
+SWAPPINESS="vm.swappiness = 10"
+echo "${SWAPPINESS}" >> /etc/sysctl.conf
+# Check for the string
+/bin/grep "${SWAPPINESS}" ${SYSCTL_CONFIG_FILE}
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${SWAPPINESS}."
+	exit 1
+fi
+
+
+echo ${DELIMITER}
 echo "Exit. Success!...  "
 echo "        Please ssh to the cloud machine and enter 'yes' one time."
 echo "        Then please reboot:  shutdown -r now"
