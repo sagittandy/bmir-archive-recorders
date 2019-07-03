@@ -482,7 +482,7 @@ echo "</PRE></BODY></HTML>" >> ${OUTFILE}
 
 
 # Upload HTML
-scp ${OUTFILE} ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
+scp -o "StrictHostKeyChecking=no" ${OUTFILE} ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} could not upload output file."
