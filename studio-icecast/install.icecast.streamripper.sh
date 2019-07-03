@@ -161,7 +161,7 @@ cp -p ${ICECAST_CONFIG_FILE} /tmp/icecast.config.file.orig.xml
 # Todo someday: Create a function to do this, and add better checking.
 echo ${DELIMITER}
 echo "Customize hostname in icecast config file."
-sed -ie "s:<hostname>localhost</hostname>:<hostname>${ICECAST_HOSTNAME}</hostname>:g" ${ICECAST_CONFIG_FILE}
+sed -i "s:<hostname>localhost</hostname>:<hostname>${ICECAST_HOSTNAME}</hostname>:g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing hostname in icecast config file."
@@ -171,7 +171,7 @@ fi
 
 echo ${DELIMITER}
 echo "Customize source password in icecast config file."
-sed -ie "s:<source-password>hackme</source-password>:<source-password>${ICECAST_SOURCE_PASSWORD}</source-password>:g" ${ICECAST_CONFIG_FILE}
+sed -i "s:<source-password>hackme</source-password>:<source-password>${ICECAST_SOURCE_PASSWORD}</source-password>:g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing source password in icecast config file."
@@ -181,7 +181,7 @@ fi
 
 echo ${DELIMITER}
 echo "Customize relay password in icecast config file."
-sed -ie "s:<relay-password>hackme</relay-password>:<relay-password>${ICECAST_RELAY_PASSWORD}</relay-password>:g" ${ICECAST_CONFIG_FILE}
+sed -i "s:<relay-password>hackme</relay-password>:<relay-password>${ICECAST_RELAY_PASSWORD}</relay-password>:g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing relay password in icecast config file."
@@ -191,7 +191,7 @@ fi
 
 echo ${DELIMITER}
 echo "Customize admin password in icecast config file."
-sed -ie "s:<admin-password>hackme</admin-password>:<admin-password>${ICECAST_ADMIN_PASSWORD}</admin-password>:g" ${ICECAST_CONFIG_FILE}
+sed -i "s:<admin-password>hackme</admin-password>:<admin-password>${ICECAST_ADMIN_PASSWORD}</admin-password>:g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing admin password in icecast config file."
@@ -201,7 +201,7 @@ fi
 
 echo ${DELIMITER}
 echo "Uncomment changeowner in icecast config file, step 1 of 2."
-sed -ie "s:<changeowner>: --> <changeowner>:g" ${ICECAST_CONFIG_FILE}
+sed -i "s:<changeowner>: --> <changeowner>:g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} uncommenting changeowner in icecast config file, step 1 of 2."
@@ -211,7 +211,7 @@ fi
 
 echo ${DELIMITER}
 echo "Uncomment changeowner in icecast config file, step 2 of 2."
-sed -ie "s:</changeowner>:</changeowner> <!-- :g" ${ICECAST_CONFIG_FILE}
+sed -i "s:</changeowner>:</changeowner> <!-- :g" ${ICECAST_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
     echo "ERROR ${rc} uncommenting changeowner in icecast config file, step 2 of 2."

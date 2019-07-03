@@ -87,7 +87,7 @@ fi
 
 echo ${DELIMITER}
 echo "Customize usbmount config file by setting mount options."
-sed -ie "s:FS_MOUNTOPTIONS=\"\":FS_MOUNTOPTIONS=\"-fstype=vfat,gid=pi,uid=pi,umask=002,sync\":g" ${USBMOUNT_CONFIG_FILE}
+sed -i "s:FS_MOUNTOPTIONS=\"\":FS_MOUNTOPTIONS=\"-fstype=vfat,gid=pi,uid=pi,umask=002,sync\":g" ${USBMOUNT_CONFIG_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing mount options in usbmount config file."
@@ -101,7 +101,7 @@ grep MOUNTOPTIONS ${USBMOUNT_CONFIG_FILE}
 
 echo ${DELIMITER}
 echo "Customize udevd service file by setting mount flags."
-sed -ie "s:MountFlags=slave:MountFlags=shared:g" ${UDEVD_SERVICE_FILE}
+sed -i "s:MountFlags=slave:MountFlags=shared:g" ${UDEVD_SERVICE_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} customizing mount flags in udevd service file."

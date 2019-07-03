@@ -114,7 +114,7 @@ if [ 0 != ${rc} ] ; then
 	exit 1
 fi
 # Do it
-sed -ie "s:raspberrypi:${HOSTNAME}:g" /etc/hosts
+sed -i "s:raspberrypi:${HOSTNAME}:g" /etc/hosts
 rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} Could not set hostname in /etc/hosts."
@@ -134,7 +134,7 @@ if [ 0 != ${rc} ] ; then
 	exit 1
 fi
 # Do it
-sed -ie "s:raspberrypi:${HOSTNAME}:g" /etc/hostname 
+sed -i "s:raspberrypi:${HOSTNAME}:g" /etc/hostname 
 rc=$?
 if [ 0 != ${rc} ] ; then
         echo "ERROR ${rc} Could not set hostname in /etc/hostname."
@@ -238,7 +238,7 @@ if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} Autossh file does not contain 'NR 10022' before sed."
 	exit 1
 fi
-sed -ie "s:NR 10022:NR ${REMOTE_PORT}:g" ${AUTOSSH_FILE}
+sed -i "s:NR 10022:NR ${REMOTE_PORT}:g" ${AUTOSSH_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
         echo "ERROR ${rc} Could not set remote_port in /home/pi/studio-rpi-icecast/autossh/autossh.service."
