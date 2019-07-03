@@ -8,6 +8,34 @@ using Raspbian Stretch Lite
 AD 2019-0407
 --------------------------------------------
 
+Automated Setup Summary
+
+	On Laptop:
+		Insert SDCard to reader on laptop
+		As ROOT:
+			gparted (delete all SDCard)
+			remove/reinsert
+		As user:
+			etcher-electron (flash raspbian)
+			remove/reinsert
+		As user:
+			cd sdcard/
+			Get ssh key files
+			./setup.laptop.sh
+			remove
+	On RPI:
+		Insert SDCard to RPI and power-on
+		As ROOT:
+			cd /boot/studio-rpi-icecast/sdcard/
+			./setup.rpi.sh <PASSWORD> <HOSTNAME> <REMOTE_PORT>
+			reboot
+		As ROOT:
+			cd /home/pi/studio-rpi-icecast/
+			./post.setup.rpi.sh
+			reboot
+			
+--------------------------------------------
+
 Prereqs
 	Linux laptop
 		gparted
