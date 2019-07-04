@@ -114,7 +114,7 @@ date >> ${OUTFILE}
 hostname >> ${OUTFILE}
 uptime >> ${OUTFILE}
 sysctl -a | grep vm.swappiness >> ${OUTFILE}
-sysctl -a | grep vm.vm.vfs_cache_pressure >> ${OUTFILE}
+sysctl -a | grep vm.vfs_cache_pressure >> ${OUTFILE}
 
 
 # Running processes
@@ -455,8 +455,9 @@ sed -i "s:${PLACEHOLDER_AMPLITUDE_VALUE}:${RMS_INT}:g" ${OUTFILE}
 
 # Append current available memory to bottom of log file
 AVAIL_MEM=`free -m | grep "Mem:" | awk '{print $7}'`
+BUFF_CACHE=`free -m | grep "Mem:" | awk '{print $6}'`
 echo "AVAIL_MEM=${AVAIL_MEM}"
-echo "${DATE_NOW} ${AVAIL_MEM}" >> availmem.txt
+echo "${DATE_NOW} avail=${AVAIL_MEM} buff/cache=${BUFF_CACHE}" >> availmem.txt
 
 # Append recent Available memory sizes to bottom of HTML file.
 echo ${DELIMITER} >> ${OUTFILE}
