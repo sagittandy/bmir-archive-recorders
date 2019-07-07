@@ -1,0 +1,46 @@
+#-----------------------------------------------------------------------
+# Service file for ifstat for RPI Raspbian Stretch Lite
+#
+# Setup
+#     Place this file here: /etc/systemd/system/ifstat.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable ifstat.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep ifstat
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status ifstat.service
+#     systemctl start  ifstat.service
+#     systemctl stop   ifstat.service
+#
+# Disable from autostart
+#     systemctl disable ifstat.service
+#
+# AD 2017-0705 Copyright BMIR 2019
+#-----------------------------------------------------------------------
+[Unit]
+Description=Ifstat service
+After=icecast.service
+
+[Service]
+Type=simple
+ExecStart=/home/pi/bin/ifstat.sh
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user pi
+User=pi
+Group=pi
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=ifstatbmir
+
+[Install]
+WantedBy=multi-user.target
+
