@@ -60,7 +60,7 @@ echo "Confirmed no parameters."
 
 echo ${DELIMITER}
 echo "Ensuring most required prereq files..."
-for FILENAME in ufw/ufw.setup.sh usbmount/install.configure.usbmount.sh autossh/autossh.service autossh/install.autossh.sh autossh/setup.autossh.service.sh icecast2/install.icecast2.sh icecast2/configure.icecast2.sh icecast2/setup.icecast.service.sh streamripper/install.streamripper.sh streamripper/setup.streamripper.service.sh monitor/setup.monitor.timer.sh uploader/setup.uploader.timer.sh
+for FILENAME in ufw/ufw.setup.sh usbmount/install.configure.usbmount.sh autossh/autossh.service autossh/install.autossh.sh autossh/setup.autossh.service.sh icecast2/install.icecast2.sh icecast2/configure.icecast2.sh icecast2/setup.icecast.service.sh streamripper/install.streamripper.sh streamripper/setup.streamripper.service.sh monitor/setup.monitor.timer.sh uploader/setup.uploader.timer.sh ifstat/setup.ifstat.service.sh ifstat/ifstat.sh
 do
 	ls ${FILENAME}
 	rc=$?
@@ -235,18 +235,17 @@ cd -
 
 
 #-----------------------------------------------------------------------
-# AD 2019-0702 This seems unnecessary after setting vm.swappiness = 10
-#echo ${DELIMITER}
-#echo "Setting up freemem systemd service..."
-#sleep 3
-#cd freemem
-#./setup.freemem.timer.sh
-#rc=$?
-#if [ 0 != ${rc} ] ; then
-#        echo "ERROR ${rc} Could not set up freemem systemd timer."
-#        exit 1
-#fi
-#cd -
+echo ${DELIMITER}
+echo "Setting up ifstat systemd service..."
+sleep 3
+cd ifstat
+./setup.ifstat.service.sh
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} Could not set up ifstat systemd service."
+        exit 1
+fi
+cd -
 
 
 echo "Exit. Success!...  Please reboot:  shutdown -r now"
