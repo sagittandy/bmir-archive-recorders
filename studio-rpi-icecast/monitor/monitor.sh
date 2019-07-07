@@ -67,6 +67,7 @@ export PLACEHOLDER_SWAP_VALUE="PLACEHOLDER_SWAP_VALUE"
 #export PLACEHOLDER_BUFF_CACHE_VALUE="PLACEHOLDER_BUFF_CACHE_VALUE"
 export PLACEHOLDER_AVAIL_COLOR="PLACEHOLDER_AVAIL_COLOR"
 export PLACEHOLDER_AVAIL_VALUE="PLACEHOLDER_AVAIL_VALUE"
+export PLACEHOLDER_CURRENT_RC_VALUE="PLACEHOLDER_CURRENT_RC_VALUE"
 
 export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
@@ -92,7 +93,7 @@ echo "<TITLE>BMIR Archiver System Status</TITLE>" >> ${OUTFILE}
 echo "<H3>BMIR Archiver System Status</H3>" >> ${OUTFILE}
 echo "<a href=\"./\">Parent Directory</a><br>" >> ${OUTFILE}
 echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OUTFILE}
-echo "<a href=\"current.mp3\">current.mp3</a>" >> ${OUTFILE}
+echo "<a href=\"current.mp3\">current.mp3</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}" >> ${OUTFILE}
 
 echo "<H3>Summary</H3>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
@@ -114,7 +115,7 @@ date >> ${OUTFILE}
 hostname >> ${OUTFILE}
 uptime >> ${OUTFILE}
 sysctl -a | grep vm.swappiness >> ${OUTFILE}
-sysctl -a | grep vm.vfs_cache_pressure >> ${OUTFILE}
+#sysctl -a | grep vm.vfs_cache_pressure >> ${OUTFILE}
 
 
 # Running processes
@@ -477,13 +478,21 @@ sed -i "s:${PLACEHOLDER_AVAIL_COLOR}:${AVAIL_HTML_COLOR}:g" ${OUTFILE}
 sed -i "s:${PLACEHOLDER_AVAIL_VALUE}:${AVAIL_MEM}:g" ${OUTFILE}
 
 
-
 # Done
 echo ${DELIMITER} >> ${OUTFILE}
 
 
 # HTML finish
 echo "</PRE></BODY></HTML>" >> ${OUTFILE}
+
+
+# Upload the most recent 4 seconds from the current mp3 file
+### ps -ef | grep streamripper | grep localhost > ers.txt
+### MP3_FILE=`awk '{ printf $11; }' ers.txt`
+tail -c 64000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > current.mp3
+scp -o "StrictHostKeyChecking=no" current.mp3 ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
+rc=$?
+sed -i "s:${PLACEHOLDER_CURRENT_RC_VALUE}:${rc}:g" ${OUTFILE}
 
 
 # Upload HTML
@@ -498,8 +507,6 @@ fi
 # Also upload the most recent 4 seconds from the current mp3 file
 ### ps -ef | grep streamripper | grep localhost > ers.txt
 ### MP3_FILE=`awk '{ printf $11; }' ers.txt`
-tail -c 64000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > current.mp3
-scp current.mp3 ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
-
-
+#tail -c 64000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > current.mp3
+#scp -o "StrictHostKeyChecking=no" current.mp3 ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
 
