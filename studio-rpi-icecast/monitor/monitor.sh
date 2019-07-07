@@ -461,10 +461,18 @@ BUFF_CACHE=`free -m | grep "Mem:" | awk '{print $6}'`
 echo "AVAIL_MEM=${AVAIL_MEM}"
 echo "${DATE_NOW} avail=${AVAIL_MEM} buff/cache=${BUFF_CACHE}" >> availmem.txt
 
+
 # Append recent Available memory sizes to bottom of HTML file.
 echo ${DELIMITER} >> ${OUTFILE}
 echo "Available memory sizes in most recent minutes..." >> ${OUTFILE}
 tail -29 availmem.txt >> ${OUTFILE} 
+
+
+# Append recent network traffic statistics to bottom of HTML file.
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Network traffic in most recent minutes..." >> ${OUTFILE}
+tail -29 ifstat.txt >> ${OUTFILE} 
+
 
 # Write the currently available memory size to top of HTML file.
 if [ ${AVAIL_MEM} -gt 300 ] ; then
