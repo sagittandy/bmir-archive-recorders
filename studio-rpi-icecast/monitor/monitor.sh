@@ -181,34 +181,34 @@ DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
 ### echo "DATE_NOW=${DATE_NOW}"
 
 # Create initial swap value file, if it does not exist.
-if [ ! -f swap.txt ] ; then
-	### echo "Creating swap.txt file with initial swap value: ${SWAP_NOW}"
-	KIB_MEM=`top -bn1 | grep "KiB Mem"`
-        KIB_SWAP=`top -bn1 | grep "KiB Swap"`
-        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
-        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
-fi
-
+#if [ ! -f swap.txt ] ; then
+#	### echo "Creating swap.txt file with initial swap value: ${SWAP_NOW}"
+#	KIB_MEM=`top -bn1 | grep "KiB Mem"`
+#       KIB_SWAP=`top -bn1 | grep "KiB Swap"`
+#        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
+#        echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
+#fi
+#
 # Read the most recent swap value from the last line of the swap value file.
-SWAP_PREV=`tail -1 swap.txt | awk '{print $1}'`
+#SWAP_PREV=`tail -1 swap.txt | awk '{print $1}'`
 ### echo "SWAP_PREV=${SWAP_PREV}"
-
+#
 # Compare the previous and current swap values.
 # If different, save current value to file.
-if [ "${SWAP_PREV}" == "${SWAP_NOW}" ] ; then
-	echo "Ok. Swap has not grown."
-else
-        ### echo "Appending swap.txt file with curent swap value: ${SWAP_NOW}"
-	KIB_MEM=`top -bn1 | grep "KiB Mem"`
-	KIB_SWAP=`top -bn1 | grep "KiB Swap"`
-	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
-	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
-fi
-
-# Report the last several swap changes and timestamps.
-echo ${DELIMITER} >> ${OUTFILE}
-echo "Most recent swap value changes..." >> ${OUTFILE}
-tail -9 swap.txt >> ${OUTFILE} 
+#if [ "${SWAP_PREV}" == "${SWAP_NOW}" ] ; then
+#	echo "Ok. Swap has not grown."
+#else
+#        ### echo "Appending swap.txt file with curent swap value: ${SWAP_NOW}"
+#	KIB_MEM=`top -bn1 | grep "KiB Mem"`
+#	KIB_SWAP=`top -bn1 | grep "KiB Swap"`
+#	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_MEM}" >> swap.txt
+#	echo "${SWAP_NOW} ${DATE_NOW} ${KIB_SWAP}" >> swap.txt
+#fi
+#
+## Report the last several swap changes and timestamps.
+#echo ${DELIMITER} >> ${OUTFILE}
+#echo "Most recent swap value changes..." >> ${OUTFILE}
+#tail -9 swap.txt >> ${OUTFILE} 
 
 # Write the swap file usage number into the top of the HTML file.
 if [ ${SWAP_NOW} -gt 2048 ] ; then
