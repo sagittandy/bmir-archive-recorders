@@ -330,24 +330,66 @@ if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not exist."
 	exit 1
 fi
-# Append the string swappiness
+# Define the string for no swapping.
 SWAPPINESS="vm.swappiness = 0"
-echo "${SWAPPINESS}" >> /etc/sysctl.conf
+# Ensure string not already present.
+/bin/grep "vm.swappiness" ${SYSCTL_CONFIG_FILE}
+if [ 0 == ${rc} ] ; then
+	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} already contains swappiness."
+	exit 1
+fi
+# Append swappiness.
+echo "${SWAPPINESS}" >> ${SYSCTL_CONFIG_FILE}
 # Check for the string
 /bin/grep "${SWAPPINESS}" ${SYSCTL_CONFIG_FILE}
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${SWAPPINESS}."
 	exit 1
 fi
-# Append the string cache_pressure
-#CACHE_PRESSURE="vm.vfs_cache_pressure = 50"
-#echo "${CACHE_PRESSURE}" >> /etc/sysctl.conf
-# Check for the string
-#/bin/grep "${CACHE_PRESSURE}" ${SYSCTL_CONFIG_FILE}
-#if [ 0 != ${rc} ] ; then
-#	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${CACHE_PRESSURE}."
-#	exit 1
-#fi
+
+
+echo ${DELIMITER}
+echo "Disabling Wi-Fi and Bluetooth in /boot/config.txt with dtoverlay..."
+sleep 3
+BOOT_CONFIG_FILE="/boot/config.txt"
+ls ${BOOT_CONFIG_FILE}
+rc=$?
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} File ${BOOT_CONFIG_FILE} does not exist."
+	exit 1
+fi
+# Define strings
+CFG_COMMENT="# Disable Wi-Fi and Bluetooth"
+CFG_WIFI="pi3-disable-wifi"
+CFG_BLUE="pi3-disable-bt"
+# Ensure strings not already present
+/bin/grep "${CFG_WIFI}" ${BOOT_CONFIG_FILE}
+if [ 0 == ${rc} ] ; then
+	echo "ERROR ${rc} Wi-Fi is already disabled in ${BOOT_CONFIG_FILE}."
+	exit 1
+fi
+/bin/grep "${CFG_BLUE}" ${BOOT_CONFIG_FILE}
+if [ 0 == ${rc} ] ; then
+	echo "ERROR ${rc} Bluetooth is already disabled in ${BOOT_CONFIG_FILE}."
+	exit 1
+fi
+# Append strings
+echo "${CFG_COMMENT}" >> ${BOOT_CONFIG_FILE}
+echo "### dtoverlay=${CFG_WIFI}" >> ${BOOT_CONFIG_FILE}
+echo "dtoverlay=${CFG_BLUE}" >> ${BOOT_CONFIG_FILE}
+
+# Verify
+/bin/grep "dtoverlay=${CFG_WIFI}" ${BOOT_CONFIG_FILE}
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} Wi-Fi is not disabled in ${BOOT_CONFIG_FILE}."
+	exit 1
+fi
+/bin/grep "dtoverlay=${CFG_BLUE}" ${BOOT_CONFIG_FILE}
+if [ 0 != ${rc} ] ; then
+	echo "ERROR ${rc} Bluetooth is not disabled in ${BOOT_CONFIG_FILE}."
+	exit 1
+fi
+
 
 
 echo ${DELIMITER}
