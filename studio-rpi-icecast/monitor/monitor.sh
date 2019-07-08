@@ -57,6 +57,8 @@ export PLACEHOLDER_ICECAST_COLOR="PLACEHOLDER_ICECAST_COLOR"
 export PLACEHOLDER_ICECAST_VALUE="PLACEHOLDER_ICECAST_VALUE"
 export PLACEHOLDER_STREAMRIPPER_COLOR="PLACEHOLDER_STREAMRIPPER_COLOR"
 export PLACEHOLDER_STREAMRIPPER_VALUE="PLACEHOLDER_STREAMRIPPER_VALUE"
+export PLACEHOLDER_RX_DATA_COLOR="PLACEHOLDER_RX_DATA_COLOR"
+export PLACEHOLDER_RX_DATA_VALUE="PLACEHOLDER_RX_DATA_VALUE"
 export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
 export PLACEHOLDER_FILESYSTEM_VALUE="PLACEHOLDER_FILESYSTEM_VALUE"
 export PLACEHOLDER_AMPLITUDE_COLOR="PLACEHOLDER_AMPLITUDE_COLOR"
@@ -98,11 +100,12 @@ echo "<a href=\"current.mp3\">current.mp3</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}
 echo "<H3>Summary</H3>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} Kb</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_RX_DATA_COLOR}\"><b>Received Data: ${PLACEHOLDER_RX_DATA_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
 #echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} Mb</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} Kb</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
@@ -468,12 +471,6 @@ echo "Available memory sizes in most recent minutes..." >> ${OUTFILE}
 tail -29 availmem.txt >> ${OUTFILE} 
 
 
-# Append recent network traffic statistics to bottom of HTML file.
-echo ${DELIMITER} >> ${OUTFILE}
-echo "Network traffic in most recent minutes..." >> ${OUTFILE}
-tail -29 ifstat.txt >> ${OUTFILE} 
-
-
 # Write the currently available memory size to top of HTML file.
 if [ ${AVAIL_MEM} -gt 300 ] ; then
 	AVAIL_HTML_COLOR="${HTML_GREEN}"
@@ -484,6 +481,28 @@ else
 fi
 sed -i "s:${PLACEHOLDER_AVAIL_COLOR}:${AVAIL_HTML_COLOR}:g" ${OUTFILE}
 sed -i "s:${PLACEHOLDER_AVAIL_VALUE}:${AVAIL_MEM}:g" ${OUTFILE}
+
+
+# Append recent network traffic statistics to bottom of HTML file.
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Network traffic in most recent minutes..." >> ${OUTFILE}
+tail -29 ifstat.txt >> ${OUTFILE} 
+
+
+# Write recent network traffic value to top of HTML file.
+RX_DATA_SEC=`tail -1 ifstat.txt | awk '{print $4}'`
+echo "RX_DATA_SEC=${RX_DATA_SEC}"
+RX_DATA_MIN=`echo "${RX_DATA_SEC}*60"|bc`
+echo "RX_DATA_MIN=${RX_DATA_MIN}"
+if (( $(echo "${RX_DATA_MIN} > 800" |bc -l) )); then
+	RX_DATA_COLOR="${HTML_GREEN}"
+elif (( $(echo "${RX_DATA_MIN} > 400" |bc -l) )); then
+	RX_DATA_COLOR="${HTML_YELLOW}"
+else
+	RX_DATA_COLOR="${HTML_RED}"
+fi
+sed -i "s:${PLACEHOLDER_RX_DATA_COLOR}:${RX_DATA_COLOR}:g" ${OUTFILE}
+sed -i "s:${PLACEHOLDER_RX_DATA_VALUE}:${RX_DATA_MIN}:g" ${OUTFILE}
 
 
 # Done
