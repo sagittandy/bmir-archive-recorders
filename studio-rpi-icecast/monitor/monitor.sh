@@ -70,6 +70,9 @@ export PLACEHOLDER_SWAP_VALUE="PLACEHOLDER_SWAP_VALUE"
 export PLACEHOLDER_AVAIL_COLOR="PLACEHOLDER_AVAIL_COLOR"
 export PLACEHOLDER_AVAIL_VALUE="PLACEHOLDER_AVAIL_VALUE"
 export PLACEHOLDER_CURRENT_RC_VALUE="PLACEHOLDER_CURRENT_RC_VALUE"
+export PLACEHOLDER_FILE_COUNT_COLOR="PLACEHOLDER_FILE_COUNT_COLOR"
+export PLACEHOLDER_FILE_COUNT_STUDIO_VALUE="PLACEHOLDER_FILE_COUNT_STUDIO_VALUE"
+export PLACEHOLDER_FILE_COUNT_CLOUD_VALUE="PLACEHOLDER_FILE_COUNT_CLOUD_VALUE"
 
 export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
@@ -106,7 +109,7 @@ echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Am
 #echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
-
+echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>File Counts: Studio=${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE} Cloud=${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE} </b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Files</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
@@ -122,11 +125,30 @@ ls -lrt /media/usb/bmir/${DATE} >> ${OUTFILE}
 # Archiver today's files on the Cloud VM
 echo ${DELIMITER} >> ${OUTFILE}
 echo "Today's files in Cloud..." >> ${OUTFILE}
-DATE=`date +%m%d`
+#DATE=`date +%m%d`
 ssh -o "StrictHostKeyChecking=no" pi@dobmir ls -lrt /home/pi/bmir/${DATE} >> ${OUTFILE}
+
+
+# Compare file counts on Studio RPI and Cloud VM
+#DATE=`date +%m%d`
+FILE_COUNT_STUDIO=`ls -l /media/usb/bmir/${DATE}/bmir*.mp3  | wc -l`
+FILE_COUNT_CLOUD=`ssh -o "StrictHostKeyChecking=no" pi@dobmir ls -lrt /home/pi/bmir/${DATE}/bmir*.mp3 | wc -l`
+echo "FILE_COUNT_STUDIO=${FILE_COUNT_STUDIO} FILE_COUNT_CLOUD=${FILE_COUNT_CLOUD}" >> ${OUTFILE}
+FILE_COUNT_DELTA=`echo "${FILE_COUNT_STUDIO}-${FILE_COUNT_CLOUD}"|bc`
+echo "FILE_COUNT_DELTA=${FILE_COUNT_DELTA}"
+if [ "${FILE_COUNT_DELTA}" = "0" ] || [ "${FILE_COUNT_DELTA}" = "1" ] || [ "${FILE_COUNT_DELTA}" = "2" ] ; then
+	echo "GREEN" >> ${OUTFILE}
+	FILE_COUNT_HTML_COLOR="${HTML_GREEN}"
+else
+	echo "YELLOW" >> ${OUTFILE}
+	FILE_COUNT_HTML_COLOR="${HTML_YELLOW}"
+fi
+sed -i "s:${PLACEHOLDER_FILE_COUNT_COLOR}:${FILE_COUNT_HTML_COLOR}:g" ${OUTFILE}
+sed -i "s:${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE}:${FILE_COUNT_STUDIO}:g" ${OUTFILE}
+sed -i "s:${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE}:${FILE_COUNT_CLOUD}:g" ${OUTFILE}
+
+
 echo "</PRE>" >> ${OUTFILE}
-
-
 echo ${DELIMITER} >> ${OUTFILE}
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
