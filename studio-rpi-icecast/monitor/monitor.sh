@@ -101,15 +101,15 @@ echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OU
 echo "<a href=\"current.mp3\">current.mp3</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}" >> ${OUTFILE}
 
 echo "<H3>Summary</H3>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_RX_DATA_COLOR}\"><b>Received Data: ${PLACEHOLDER_RX_DATA_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
 #echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>File Counts: Studio=${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE} Cloud=${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE} </b></span><br>" >> ${OUTFILE}
+echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>MP3 File Counts: Studio=${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE} Cloud=${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE} </b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Files</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
@@ -133,14 +133,14 @@ ssh -o "StrictHostKeyChecking=no" pi@dobmir ls -lrt /home/pi/bmir/${DATE} >> ${O
 #DATE=`date +%m%d`
 FILE_COUNT_STUDIO=`ls -l /media/usb/bmir/${DATE}/bmir*.mp3  | wc -l`
 FILE_COUNT_CLOUD=`ssh -o "StrictHostKeyChecking=no" pi@dobmir ls -lrt /home/pi/bmir/${DATE}/bmir*.mp3 | wc -l`
-echo "FILE_COUNT_STUDIO=${FILE_COUNT_STUDIO} FILE_COUNT_CLOUD=${FILE_COUNT_CLOUD}" >> ${OUTFILE}
+### echo "FILE_COUNT_STUDIO=${FILE_COUNT_STUDIO} FILE_COUNT_CLOUD=${FILE_COUNT_CLOUD}" >> ${OUTFILE}
 FILE_COUNT_DELTA=`echo "${FILE_COUNT_STUDIO}-${FILE_COUNT_CLOUD}"|bc`
-echo "FILE_COUNT_DELTA=${FILE_COUNT_DELTA}"
+### echo "FILE_COUNT_DELTA=${FILE_COUNT_DELTA}"
 if [ "${FILE_COUNT_DELTA}" = "0" ] || [ "${FILE_COUNT_DELTA}" = "1" ] || [ "${FILE_COUNT_DELTA}" = "2" ] ; then
-	echo "GREEN" >> ${OUTFILE}
+	###echo "GREEN" >> ${OUTFILE}
 	FILE_COUNT_HTML_COLOR="${HTML_GREEN}"
 else
-	echo "YELLOW" >> ${OUTFILE}
+	###echo "YELLOW" >> ${OUTFILE}
 	FILE_COUNT_HTML_COLOR="${HTML_YELLOW}"
 fi
 sed -i "s:${PLACEHOLDER_FILE_COUNT_COLOR}:${FILE_COUNT_HTML_COLOR}:g" ${OUTFILE}
@@ -148,8 +148,8 @@ sed -i "s:${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE}:${FILE_COUNT_STUDIO}:g" ${OUTFI
 sed -i "s:${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE}:${FILE_COUNT_CLOUD}:g" ${OUTFILE}
 
 
-echo "</PRE>" >> ${OUTFILE}
 echo ${DELIMITER} >> ${OUTFILE}
+echo "</PRE>" >> ${OUTFILE}
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
 
