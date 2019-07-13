@@ -334,6 +334,7 @@ fi
 SWAPPINESS="vm.swappiness = 0"
 # Ensure string not already present.
 /bin/grep "vm.swappiness" ${SYSCTL_CONFIG_FILE}
+rc=$?
 if [ 0 == ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} already contains swappiness."
 	exit 1
@@ -342,6 +343,7 @@ fi
 echo "${SWAPPINESS}" >> ${SYSCTL_CONFIG_FILE}
 # Check for the string
 /bin/grep "${SWAPPINESS}" ${SYSCTL_CONFIG_FILE}
+rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} File ${SYSCTL_CONFIG_FILE} does not contain ${SWAPPINESS}."
 	exit 1
@@ -364,11 +366,13 @@ CFG_WIFI="pi3-disable-wifi"
 CFG_BLUE="pi3-disable-bt"
 # Ensure strings not already present
 /bin/grep "${CFG_WIFI}" ${BOOT_CONFIG_FILE}
+rc=$?
 if [ 0 == ${rc} ] ; then
 	echo "ERROR ${rc} Wi-Fi is already disabled in ${BOOT_CONFIG_FILE}."
 	exit 1
 fi
 /bin/grep "${CFG_BLUE}" ${BOOT_CONFIG_FILE}
+rc=$?
 if [ 0 == ${rc} ] ; then
 	echo "ERROR ${rc} Bluetooth is already disabled in ${BOOT_CONFIG_FILE}."
 	exit 1
@@ -380,11 +384,13 @@ echo "dtoverlay=${CFG_BLUE}" >> ${BOOT_CONFIG_FILE}
 
 # Verify
 /bin/grep "dtoverlay=${CFG_WIFI}" ${BOOT_CONFIG_FILE}
+rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} Wi-Fi is not disabled in ${BOOT_CONFIG_FILE}."
 	exit 1
 fi
 /bin/grep "dtoverlay=${CFG_BLUE}" ${BOOT_CONFIG_FILE}
+rc=$?
 if [ 0 != ${rc} ] ; then
 	echo "ERROR ${rc} Bluetooth is not disabled in ${BOOT_CONFIG_FILE}."
 	exit 1
