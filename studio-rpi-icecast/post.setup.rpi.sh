@@ -236,6 +236,17 @@ cd -
 
 #-----------------------------------------------------------------------
 echo ${DELIMITER}
+echo "Installing ifstat..."
+sleep 3
+./ifstat/install.ifstat.sh
+rc=$?
+if [ 0 != ${rc} ] ; then
+        echo "ERROR ${rc} Could not install ifstat."
+        exit 1
+fi
+
+
+echo ${DELIMITER}
 echo "Setting up ifstat systemd service..."
 sleep 3
 cd ifstat
