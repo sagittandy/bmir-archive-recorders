@@ -91,7 +91,7 @@ rm ${OUTFILE}
 # HTML start
 echo "<HTML><meta http-equiv=\"refresh\" content=\"30\">" >> ${OUTFILE}
 echo "<BODY>" >> ${OUTFILE}
-echo "<TITLE>BMIR Archiver System Status</TITLE>" >> ${OUTFILE}
+echo "<TITLE>BMIR Studio Archiver System Status</TITLE>" >> ${OUTFILE}
 echo "<H3>BMIR Archiver System Status</H3>" >> ${OUTFILE}
 echo "<a href=\"./\">Parent Directory</a><br>" >> ${OUTFILE}
 echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OUTFILE}
@@ -107,13 +107,34 @@ echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Am
 echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 
+
+echo "<H3>Files</H3>" >> ${OUTFILE}
+echo "<PRE>" >> ${OUTFILE}
+
+
+# Archiver today's files on Studio Raspberry Pi
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Today's files in Studio..." >> ${OUTFILE}
+DATE=`date +%m%d`
+ls -lrt /media/usb/bmir/${DATE} >> ${OUTFILE}
+
+
+# Archiver today's files on the Cloud VM
+echo ${DELIMITER} >> ${OUTFILE}
+echo "Today's files in Cloud..." >> ${OUTFILE}
+DATE=`date +%m%d`
+ssh -o "StrictHostKeyChecking=no" pi@dobmir ls -lrt /home/pi/bmir/${DATE} >> ${OUTFILE}
+echo "</PRE>" >> ${OUTFILE}
+
+
+echo ${DELIMITER} >> ${OUTFILE}
 echo "<H3>Details</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
 
 
 # Timestamp
 echo ${DELIMITER} >> ${OUTFILE}
-echo "BMIR Archiver System Status" >> ${OUTFILE}
+echo "BMIR Studio Archiver System Status" >> ${OUTFILE}
 date >> ${OUTFILE}
 hostname >> ${OUTFILE}
 uptime >> ${OUTFILE}
@@ -275,13 +296,6 @@ curl -o icecast.stats.json http://localhost:8000/status-json.xsl
 ls -l icecast.stats.json >> ${OUTFILE}
 cat icecast.stats.json >> ${OUTFILE}
 echo "" >> ${OUTFILE}
-
-
-# Archiver today's files
-echo ${DELIMITER} >> ${OUTFILE}
-echo "Today's files..." >> ${OUTFILE}
-DATE=`date +%m%d`
-ls -lrt /media/usb/bmir/${DATE} >> ${OUTFILE}
 
 
 # Get the current mp3 folder disk usage
