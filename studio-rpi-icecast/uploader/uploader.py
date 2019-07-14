@@ -40,7 +40,7 @@ Usage: Intended to be invoked at 10 mins past every hour (by cron)
        (Because the archiver generates new files every two hours,
        this script will upload every two hours, and do nothing inbetween.)
 
-
+AD 2019-0714-1700 Enhanced to check remote MD5s first before uploading
 AD 2019-0407-2247 Updated slightly for RPI
 AD 2018-0823-0922 (written from scratch on-playa, so no snark please!)
 AD 2018-0823-0922 Copyright BMIR 2018,2019
@@ -141,6 +141,31 @@ def get_remote_file_md5sum(username, hostname, fully_qualified_filename):
 		sop(5,m,'extracted md5sum: >>>%s<<<' % (md5sum))
 
 	return exitcode, md5sum
+
+
+# Works but not needed...
+#
+#def get_remote_file_exists(username, hostname, fully_qualified_filename):
+#	'''Issues an SSH command to the specified machine which
+#	determines whether the specified fully qualified file exists.
+#	Returns the exitcode (zero=success).'''
+#	m = 'get_remote_file_exists'
+#
+#	target = username + '@' + hostname
+#
+#	# Define the command. 
+#	args = ['ssh', target, 'ls', fully_qualified_filename]
+#
+#	for arg in args:
+#		sop(5,m,'arg: >>>%s<<<' % arg)
+#
+#	proc = Popen(args, stdout=PIPE, stderr=PIPE)
+#	out, err = proc.communicate()
+#	exitcode = proc.returncode
+#	show_exitcode_stdout_stderr(exitcode, out, err)
+#
+#	return exitcode
+#
 
 
 def upload_file(username, hostname, fully_qualified_local_filename, fully_qualified_remote_filename):
@@ -283,29 +308,36 @@ def analyze_files(currentMp3FilePrefix):
 					sop(0,m,'EXIT ERROR: Could not create remote directory' + local_dir)
 					sys.exit(-1)
 
-				# Upload the mp3 file.
-				rc = upload_file(USERNAME, HOSTNAME, fq_local_mp3, fq_remote_mp3)
-				if 0 != rc: 
-					sop(0,m,'EXIT ERROR: Could not upload file: ' + fq_remote_mp3)
-					sys.exit(-1)
-
-				# Ensure MD5SUMs for local and remote files match.
+				# Get the MD5SUM of the local file.
 				rc,local_md5sum = get_local_file_md5sum(fq_local_mp3)
 				if 0 != rc: 
 					sop(0,m,'EXIT ERROR: Could not get local md5sum: %s' % (fq_local_mp3))
 					sys.exit(-1)
+				sop(5,m,'===> %s' % (local_md5sum))
 
+				# Check if the remote file already exists by getting its MD5SUM.
 				rc,remote_md5sum = get_remote_file_md5sum(USERNAME, HOSTNAME, fq_remote_mp3)
-				if 0 != rc: 
-					sop(0,m,'EXIT ERROR: Could not get remote md5sum: %s' % (fq_remote_mp3))
-					sys.exit(-1)
+				sop(5,m,'===> rc=%i local_md5sum=%s remote_md5sum=%s' % (rc, local_md5sum, remote_md5sum))
+				if 0 != rc or local_md5sum != remote_md5sum:
+					sop(0,m,'Uploading file because remote file does not exist or MD5SUMs are not equal')
 
-				sop(5,m,'===> %s %s' % (local_md5sum, remote_md5sum))
-				
+					# Upload the mp3 file if the remote does not already exist or MD5SUMs don't match.
+					rc = upload_file(USERNAME, HOSTNAME, fq_local_mp3, fq_remote_mp3)
+					if 0 != rc: 
+						sop(0,m,'EXIT ERROR: Could not upload file: ' + fq_remote_mp3)
+						sys.exit(-1)
+
+					# Get the MD5SUM of the uploaded remote file.
+					rc,remote_md5sum = get_remote_file_md5sum(USERNAME, HOSTNAME, fq_remote_mp3)
+					if 0 != rc: 
+						sop(0,m,'EXIT ERROR: Could not get remote md5sum: %s' % (fq_remote_mp3))
+						sys.exit(-1)
+					sop(5,m,'===> %s %s' % (local_md5sum, remote_md5sum))
+
+				# Ensure MD5SUMs for local and remote files match after upload.				
 				if local_md5sum != remote_md5sum:
 					sop(0,m,'EXIT ERROR: MD5SUMs are not equal')
 					sys.exit(-1)
-
 
 				# Add the filename to the config database.
 				uploaded_files.append(mp3_suffix)

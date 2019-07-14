@@ -57,6 +57,7 @@ export PLACEHOLDER_ICECAST_COLOR="PLACEHOLDER_ICECAST_COLOR"
 export PLACEHOLDER_ICECAST_VALUE="PLACEHOLDER_ICECAST_VALUE"
 export PLACEHOLDER_STREAMRIPPER_COLOR="PLACEHOLDER_STREAMRIPPER_COLOR"
 export PLACEHOLDER_STREAMRIPPER_VALUE="PLACEHOLDER_STREAMRIPPER_VALUE"
+export PLACEHOLDER_DATE_NOW_VALUE="PLACEHOLDER_DATE_NOW_VALUE"
 export PLACEHOLDER_RX_DATA_COLOR="PLACEHOLDER_RX_DATA_COLOR"
 export PLACEHOLDER_RX_DATA_VALUE="PLACEHOLDER_RX_DATA_VALUE"
 export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
@@ -101,6 +102,8 @@ echo "<a href=\"bmir.cloud.status.html\">bmir.cloud.status.html</a><br>" >> ${OU
 echo "<a href=\"current.mp3\">current.mp3</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}" >> ${OUTFILE}
 
 echo "<H3>Summary</H3>" >> ${OUTFILE}
+
+echo "Last Updated: ${PLACEHOLDER_DATE_NOW_VALUE}<br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
@@ -113,6 +116,20 @@ echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>MP3 F
 
 echo "<H3>Files</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
+
+
+# Timestamps...
+
+# Get hundredths of seconds from the first 2 digits of nanoseconds.
+NANO_SECONDS=`date +%N`
+CENTI_SECONDS="${NANO_SECONDS:0:2}"
+
+# Format time as [year - month date - hour minute - seconds centiseconds]
+DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
+
+
+# Overlay the date value on top of the page.
+sed -i "s:${PLACEHOLDER_DATE_NOW_VALUE}:${DATE_NOW}:g" ${OUTFILE}
 
 
 # Archiver today's files on Studio Raspberry Pi
@@ -221,11 +238,11 @@ SWAP_NOW=`top -bn1 | grep "KiB Swap" | awk '{print $7}'`
 ### echo "SWAP_NOW=${SWAP_NOW}"
 
 # Get hundredths of seconds from the first 2 digits of nanoseconds.
-NANO_SECONDS=`date +%N`
-CENTI_SECONDS="${NANO_SECONDS:0:2}"
+#NANO_SECONDS=`date +%N`
+#CENTI_SECONDS="${NANO_SECONDS:0:2}"
 
 # Format time as [year - month date - hour minute - seconds centiseconds]
-DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
+#DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
 ### echo "DATE_NOW=${DATE_NOW}"
 
 # Create initial swap value file, if it does not exist.
@@ -526,8 +543,15 @@ tail -29 ifstat.txt >> ${OUTFILE}
 
 
 # Write recent network traffic value to top of HTML file.
-RX_DATA_SEC=`tail -1 ifstat.txt | awk '{print $4}'`
+RX_DATA_SEC_ETH=`tail -1 ifstat.txt | awk '{print $2}'`
+echo "RX_DATA_SEC_ETH=${RX_DATA_SEC_ETH}"
+
+RX_DATA_SEC_WIFI=`tail -1 ifstat.txt | awk '{print $4}'`
+echo "RX_DATA_SEC_WIFI=${RX_DATA_SEC_WIFI}"
+
+RX_DATA_SEC=`echo "${RX_DATA_SEC_ETH}+${RX_DATA_SEC_WIFI}"|bc`
 echo "RX_DATA_SEC=${RX_DATA_SEC}"
+
 RX_DATA_MIN=`echo "${RX_DATA_SEC}*60"|bc`
 echo "RX_DATA_MIN=${RX_DATA_MIN}"
 if (( $(echo "${RX_DATA_MIN} > 800" |bc -l) )); then
