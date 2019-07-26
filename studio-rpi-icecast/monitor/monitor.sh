@@ -58,6 +58,7 @@ export PLACEHOLDER_ICECAST_VALUE="PLACEHOLDER_ICECAST_VALUE"
 export PLACEHOLDER_STREAMRIPPER_COLOR="PLACEHOLDER_STREAMRIPPER_COLOR"
 export PLACEHOLDER_STREAMRIPPER_VALUE="PLACEHOLDER_STREAMRIPPER_VALUE"
 export PLACEHOLDER_DATE_NOW_VALUE="PLACEHOLDER_DATE_NOW_VALUE"
+export PLACEHOLDER_EPOCH_SECS_VALUE="PLACEHOLDER_EPOCH_SECS_VALUE"
 export PLACEHOLDER_RX_DATA_COLOR="PLACEHOLDER_RX_DATA_COLOR"
 export PLACEHOLDER_RX_DATA_VALUE="PLACEHOLDER_RX_DATA_VALUE"
 export PLACEHOLDER_FILESYSTEM_COLOR="PLACEHOLDER_FILESYSTEM_COLOR"
@@ -104,6 +105,7 @@ echo "<a href=\"current.mp3\">current.mp3</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}
 echo "<H3>Summary</H3>" >> ${OUTFILE}
 
 echo "Last Updated: ${PLACEHOLDER_DATE_NOW_VALUE}<br>" >> ${OUTFILE}
+echo "Epoch Seconds: ${PLACEHOLDER_EPOCH_SECS_VALUE}<br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
@@ -130,6 +132,11 @@ DATE_NOW="`date +%Y-%m%d-%H%M-%S`${CENTI_SECONDS}"
 
 # Overlay the date value on top of the page.
 sed -i "s:${PLACEHOLDER_DATE_NOW_VALUE}:${DATE_NOW}:g" ${OUTFILE}
+
+
+# Overlay the epoch time (in seconds) on top of the page.
+EPOCH_SECS=`date +%s`
+sed -i "s:${PLACEHOLDER_EPOCH_SECS_VALUE}:${EPOCH_SECS}:g" ${OUTFILE}
 
 
 # Archiver today's files on Studio Raspberry Pi
