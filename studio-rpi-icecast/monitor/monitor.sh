@@ -485,9 +485,9 @@ done < "${RMS_AMP_FILE}"
 
 
 # Write the last amplitude number into the top of the HTML file.
-if [ ${RMS_INT} -ge 120 ] ; then
+if [ ${RMS_INT} -ge 30 ] ; then
 	AMPLITUDE_HTML_COLOR="${HTML_GREEN}"
-elif [ ${RMS_INT} -ge 60 ] ; then
+elif [ ${RMS_INT} -ge 10 ] ; then
 	AMPLITUDE_HTML_COLOR="${HTML_YELLOW}"
 else 
 	AMPLITUDE_HTML_COLOR="${HTML_RED}"

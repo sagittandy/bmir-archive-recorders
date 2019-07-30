@@ -2,3 +2,5 @@ studio-rpi-icecast/sdcard/authorized_keys
 studio-rpi-icecast/sdcard/id_rsa.*
 studio-rpi-icecast/sdcard/wpa_supplicant.conf
 studio-rpi-icecast/monitor/bkps
+studio-icecast/smsnow/smsnow.creds.json
+studio-icecast/smsnow/smsnow.state.json
