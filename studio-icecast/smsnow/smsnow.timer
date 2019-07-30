@@ -1,0 +1,11 @@
+[Unit]
+Description=Run smsnow every minute
+Requires=smsnow.service
+
+[Timer]
+Unit=smsnow.timer
+OnCalendar=*-*-* *:1/1:00
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+{
+    "target_url": "http://8.8.8.8/bmir/bmir.archiver.status.html",
+    "account_sid": "ACc.......................09a",
+    "auth_token": "6a9.......................103",
+    "source_phone": "+1......1212",
+    "dest_phone_list": ["+1......1212"]
+}

@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs smsnow
+Wants=smsnow.timer
+
+[Service]
+ExecStart=/home/pi/bin/smsnow.sh
+WorkingDirectory=/home/pi/bin
+User=pi
+Group=pi
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=smsnowbmir
