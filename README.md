@@ -10,17 +10,17 @@ Several tools and techniques have been used to record the archives over the year
 
 ## Studio Icecast + Streamripper on a Raspberry Pi microcomputer
 
-These two processes will run on one raspberry pi microcomputer in the studio.  Orban Opticodec will 'upload' a digitized music stream to this icecast2 server (in addition to uploading to several music servers on the public internet.).  Streamripper on the RPI 'listens' to the stream from icecast on the RPI, and records it to mp3 files on the RPI.
+These two processes runs on one raspberry pi microcomputer in the studio.  Orban Opticodec 'uploads' a digitized music stream to this icecast2 server (in addition to uploading to several music servers on the public internet.).  Streamripper on the RPI 'listens' to the stream from icecast on the RPI, and records it to mp3 files on the RPI.
 
-This is the same Icecast + Streamripper technique which was used the last two years running on a computer, but now running on an RPI.  All the setup scripts were revamped and cleaned up, and are published in this repo in folder studio-rpi-icecast.
+This is the same Icecast + Streamripper technique which was used in 2017 and 2018 running on a computer, but now running on an RPI beginning in 2019.  All the setup scripts are revamped and cleaned up, and are published in this repo in folder studio-rpi-icecast.
 
-The RPI capabilities are similar to the desktop computer, including SSH tunnel for remote debug, and an auto-uploader to transfer MP3 files to a cloud server.  In addition, a script has been developed to publish rudimentary OS stats to the cloud server (such as CPU utilization, memory consumption, etc)
+The RPI capabilities are similar to the desktop computer, including SSH tunnel for remote debug, and an auto-uploader to transfer MP3 files to a cloud server.  In addition, a script has been developed to publish rudimentary OS stats to a cloud server (such as CPU utilization, memory consumption, etc)
 
 Benefits of RPI vs desktop computer are smaller size and lighter weight (good for transporting cross-country!), lower power, lower heat, and less dust susceptibility.
 
-Expected design challenges unique to the RPI include selecting a highly-available power supply design, and trying to minimize wearing writes to the SDCard.
+Expected design challenges unique to the RPI include selecting a highly-available power supply design, and trying to minimize wearing writes to the SDCard.  A commercial UPS was used with the standard CanaKit power supply successfully.
 
-The RPI archiver is new and experimental at Burning Man 2019!!
+The RPI archiver was new and experimental at Burning Man 2019, and performed flawlessly on its inaugural run.
 
 ## SSH tunnel for remote access
 
