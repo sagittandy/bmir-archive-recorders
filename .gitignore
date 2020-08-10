@@ -4,3 +4,6 @@ studio-rpi-icecast/sdcard/wpa_supplicant.conf
 studio-rpi-icecast/monitor/bkps
 studio-icecast/smsnow/smsnow.creds.json
 studio-icecast/smsnow/smsnow.state.json
+cloud-streamripper/*streamripper*
+.DS_Store
+*/.DS_Store

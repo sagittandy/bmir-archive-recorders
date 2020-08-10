@@ -1,0 +1,50 @@
+#-----------------------------------------------------------------------
+# Service file for streamripper for ShoutingFire on Ubuntu
+#
+# Setup
+#     Place this file here: /etc/systemd/system/xxx-streamripper.service
+#     Ensure permissions 644
+#     Enable
+#          systemctl enable xxx-streamripper.service
+#     Reboot
+#     Confirm
+#         ps -ef | grep xxx-streamripper
+#     Logs
+#         /var/log/syslog
+#
+# Manual Usage
+#     systemctl status xxx-streamripper.service
+#     systemctl start  xxx-streamripper.service
+#     systemctl stop   xxx-streamripper.service
+#
+# Disable from autostart
+#     systemctl disable xxx-streamripper.service
+#
+# AD 2020-0809-1400 Updated for generic streams
+# AD 2019-0408-1359 Updated for RPI
+# AD 2017-0806-1715 Copyright BMIR 2017,2020
+#-----------------------------------------------------------------------
+[Unit]
+Description=Streamripper service for <SERVICE_NAME>
+After=network.target
+
+[Service]
+Type=simple
+Environment="SERVICE_PREFIX=<SERVICE_PREFIX>"
+Environment="SERVICE_RADIOSTREAM=<SERVICE_RADIOSTREAM>"
+Environment="SERVICE_DEST_PATH=/home/<USER_NAME>/<SERVICE_NAME>"
+ExecStart=/home/<USER_NAME>/streamripper.archiver.sh
+ExecReload=/bin/kill -HUP $MAINPID
+# Restart service after several seconds if service crashes
+Restart=always
+RestartSec=7
+# Run as user
+User=<USER_NAME>
+Group=<USER_NAME>
+# Output to syslog
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=<SERVICE_NAME>
+
+[Install]
+WantedBy=multi-user.target
