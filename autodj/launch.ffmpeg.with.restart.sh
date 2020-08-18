@@ -17,7 +17,7 @@
 #   If they do overlap, the latest schedule will win.
 #
 # Prereqs:
-#       - Set all environment variables as checed in verify_vars().
+#       - Set all environment variables as checked in verify_vars().
 #       - Install mp3info
 #
 # Invocation:
@@ -57,33 +57,17 @@ logmsg()
 
 verify_vars()
 {
-    if [[ -z "${FFMPEG_USERNAME}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable FFMPEG_USERNAME does not exist." ; logmsg
+    for VAR in FFMPEG_USERNAME FFMPEG_PASSWORD FFMPEG_HOST FFMPEG_PORT FFMPEG_MOUNT MP3_DIR MP3_FILE ; do
+        if [[ -z "${!VAR}" ]] ; then
+            msg="ERROR: Variable $VAR does not exist." ; logmsg
+            EXIT_ERROR="True"
+        fi
+    done
+    if [[ ! -z "${EXIT_ERROR}" ]] ; then
+        msg="EXIT. ERROR. One or more variables do not exist." ; logmsg
         exit 9
-    fi
-    if [[ -z "${FFMPEG_PASSWORD}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable FFMPEG_PASSWORD does not exist." ; logmsg
-        exit 9
-    fi
-    if [[ -z "${FFMPEG_HOST}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable FFMPEG_HOST does not exist." ; logmsg
-        exit 9
-    fi
-    if [[ -z "${FFMPEG_PORT}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable FFMPEG_PORT does not exist." ; logmsg
-        exit 9
-    fi
-    if [[ -z "${FFMPEG_MOUNT}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable FFMPEG_MOUNT does not exist." ; logmsg
-        exit 9
-    fi
-    if [[ -z "${MP3_DIR}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable MP3_DIR does not exist." ; logmsg
-        exit 9
-    fi
-    if [[ -z "${MP3_FILE}" ]] ; then
-        msg="EXIT USER ERROR: Environment variable MP3_FILE does not exist." ; logmsg
-        exit 9
+    else
+        msg="Ok. All required variables exist." ; logmsg
     fi
 }
 
@@ -136,7 +120,7 @@ fi
 
 # Checking parameter count..."
 if [ $# -ne 1 ] ; then
-    msg="USER INVOCATION ERROR: Wrong number of parameters. Enter ./launch.ffmpeg.sh <MP3_FILE_NAME>" ; logmsg
+    msg="USER INVOCATION ERROR: Wrong number of parameters. Enter ./launch.ffmpeg.with.restart.sh <MP3_FILE_NAME>" ; logmsg
     exit 9
 fi
 
@@ -146,7 +130,7 @@ MP3_FILE=${1}
 msg="MP3_FILE=${MP3_FILE}" ; logmsg
 
 
-# Check env vars and cmdline parms.
+# Check env vars and cmdline parms...
 verify_vars
 
 
