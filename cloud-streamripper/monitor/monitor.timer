@@ -1,0 +1,11 @@
+[Unit]
+Description=Run monitor every minute
+Requires=<SERVICE_NAME>.service
+
+[Timer]
+Unit=<SERVICE_NAME>.timer
+OnCalendar=*-*-* *:1/1:00
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

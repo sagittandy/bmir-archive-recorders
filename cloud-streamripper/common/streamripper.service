@@ -30,9 +30,11 @@ After=network.target
 
 [Service]
 Type=simple
+Environment="SERVICE_DIR=<SERVICE_DIR>"
+Environment="SERVICE_NAME=<SERVICE_NAME>"
+Environment="SERVICE_DEST_PATH=<SERVICE_DEST_PATH>"
 Environment="SERVICE_PREFIX=<SERVICE_PREFIX>"
 Environment="SERVICE_RADIOSTREAM=<SERVICE_RADIOSTREAM>"
-Environment="SERVICE_DEST_PATH=/home/<USER_NAME>/<SERVICE_NAME>"
 ExecStart=/home/<USER_NAME>/streamripper.archiver.sh
 ExecReload=/bin/kill -HUP $MAINPID
 # Restart service after several seconds if service crashes
