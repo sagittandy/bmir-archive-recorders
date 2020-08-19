@@ -304,7 +304,7 @@ sed -i "s:${PLACEHOLDER_STREAMRIPPER_VALUE}:${STREAMRIPPER_VALUE}:g" ${OUTFILE}
 if [ "Running" == "${STREAMRIPPER_VALUE}" ] ; then
 	if [ -f ${STREAMRIPPER_OUTAGE_FILE} ] ; then
 		echo "Streamripper is restored. Removing outage file."
-        MSG_BODY="Streamripper restored: ${SERVICE_PREFIX}"
+        MSG_BODY="OK Streamripper restored: ${SERVICE_PREFIX}"
 		send_sms_twilio
 		rm ${STREAMRIPPER_OUTAGE_FILE}
 	else
@@ -315,7 +315,7 @@ else # Not running.
 		echo "Streamripper outage continues and SMS already sent. Doing nothing."
 	else
 		echo "Streamripper stopped. Sending SMS."
-		MSG_BODY="Streamripper stopped: ${SERVICE_PREFIX}"
+		MSG_BODY="ERR Streamripper stopped: ${SERVICE_PREFIX}"
 		send_sms_twilio
 		touch ${STREAMRIPPER_OUTAGE_FILE}
 	fi
@@ -475,6 +475,7 @@ do
 	DISK_USAGE_DELTA=`echo "${DISK_USAGE_INT}-${DISK_USAGE_LAST}"|bc`
 	DISK_USAGE_LAST=${DISK_USAGE_INT}
 	### echo "Delta: DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
+    DISK_USAGE_UNCLIPPED=${DISK_USAGE_DELTA}
 	if [ "${DISK_USAGE_DELTA}" -gt "${DISK_USAGE_MAX}" ] ; then
 		### echo "Clipping at DISK_USAGE_MAX ${DISK_USAGE_MAX}"
 		DISK_USAGE_DELTA=${DISK_USAGE_MAX}
@@ -494,7 +495,7 @@ do
 		i=$[$i+1]
 	done
 	### echo "SPLAT_STRING is: ${SPLAT_STRING}"
-	echo "${SPLAT_STRING} ${DISK_USAGE_DELTA}" >> ${OUTFILE}
+	echo "${SPLAT_STRING} ${DISK_USAGE_UNCLIPPED}" >> ${OUTFILE}
 done < "${DISK_USAGE_FILE}"
 
 
@@ -517,14 +518,14 @@ if [ "${FILESYSTEM_HTML_COLOR}" == "${HTML_RED}" ] ; then
 		echo "Filesystem outage continues and SMS already sent. Doing nothing."
 	else
 		echo "Filesystem stopped growing. Sending SMS."
-		MSG_BODY="Filesystem stopped growing: ${SERVICE_PREFIX}"
+		MSG_BODY="ERR Filesystem stopped growing: ${SERVICE_PREFIX}"
 		send_sms_twilio
 		touch ${FILESYSTEM_OUTAGE_FILE}
 	fi
 else # Growing
 	if [ -f ${FILESYSTEM_OUTAGE_FILE} ] ; then
 		echo "Filesystem is growing. Removing outage file."
-        MSG_BODY="Filesystem is growing: ${SERVICE_PREFIX}"
+        MSG_BODY="OK Filesystem is growing: ${SERVICE_PREFIX}"
 		send_sms_twilio
 		rm ${FILESYSTEM_OUTAGE_FILE}
 	else
