@@ -103,6 +103,7 @@ if [[ -z "${MP3_DIR}" ]]; then
 	exit 9
 fi
 
+
 export OUTFILE="${SERVICE_NAME}.html"
 ### export REMOTE_USER="pi"
 ### export REMOTE_SERVER="dobmir"
@@ -209,7 +210,7 @@ sed -i "s:${PLACEHOLDER_EPOCH_SECS_VALUE}:${EPOCH_SECS}:g" ${OUTFILE}
 echo ${DELIMITER} >> ${OUTFILE}
 echo "Today's files in archiver..." >> ${OUTFILE}
 DATE=`date +%m%d`
-ls -lrt ${SERVICE_DEST_PATH}/${DATE} >> ${OUTFILE}
+ls -lrt ${MP3_DIR}/${DATE} >> ${OUTFILE}
 
 # Archiver today's files on the Cloud VM
 #echo ${DELIMITER} >> ${OUTFILE}
@@ -393,7 +394,7 @@ df -k | grep Filesystem >> ${OUTFILE}
 
 # MP3 folder size
 echo "MP3 folder size..." >> ${OUTFILE}
-du -sk ${LOCAL_FOLDER}/* >> ${OUTFILE}
+du -sk ${MP3_DIR}/* >> ${OUTFILE}
 
 
 # USB MP3 folder size
