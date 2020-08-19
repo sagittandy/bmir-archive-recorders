@@ -304,6 +304,8 @@ sed -i "s:${PLACEHOLDER_STREAMRIPPER_VALUE}:${STREAMRIPPER_VALUE}:g" ${OUTFILE}
 if [ "Running" == "${STREAMRIPPER_VALUE}" ] ; then
 	if [ -f ${STREAMRIPPER_OUTAGE_FILE} ] ; then
 		echo "Streamripper is restored. Removing outage file."
+        MSG_BODY="Streamripper restored: ${SERVICE_PREFIX}"
+		send_sms_twilio
 		rm ${STREAMRIPPER_OUTAGE_FILE}
 	else
 		echo "Streamripper is running. Doing nothing."
@@ -522,6 +524,8 @@ if [ "${FILESYSTEM_HTML_COLOR}" == "${HTML_RED}" ] ; then
 else # Growing
 	if [ -f ${FILESYSTEM_OUTAGE_FILE} ] ; then
 		echo "Filesystem is growing. Removing outage file."
+        MSG_BODY="Filesystem is growing: ${SERVICE_PREFIX}"
+		send_sms_twilio
 		rm ${FILESYSTEM_OUTAGE_FILE}
 	else
 		echo "Filesystem is growing. Doing nothing."
