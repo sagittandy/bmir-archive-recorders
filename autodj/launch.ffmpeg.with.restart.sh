@@ -91,9 +91,9 @@ kill_all_clones()
 }
 
 
-kill_all_ffmpeg()
+kill_all_ffmpegs()
 {
-    msg="Checking for running instances of ffmpeg..." ; logmsg
+    msg="Killing ALL running instances of ffmpeg..." ; logmsg
     ps -ef | grep "ffmpeg -re" | grep -v grep
     rc=$?
     if [ 0 != ${rc} ] ; then
@@ -102,6 +102,32 @@ kill_all_ffmpeg()
         msg="One or more ffmpegs are running. Killing all instances of ffmpeg..." ; logmsg
         killall ffmpeg
     fi
+}
+
+
+kill_my_ffmpegs()
+{
+    msg="Killing instances of ffmpeg launched by THIS script..." ; logmsg
+	tmpfile="$$.tmp"
+	myfile=`basename "$0"`
+	msg="tmpfile=$tmpfile myfile=$myfile" ; logmsg
+	ps -ef | grep "ffmpeg" | grep -v "${myfile}" | grep -v grep > $tmpfile
+	cat $tmpfile
+	while read p; do
+		#msg="p: $p" ; logmsg
+		stringarray=($p)
+		ffmpeg_pid="${stringarray[1]}"
+		launcher_pid="${stringarray[2]}"
+		msg="ffmpeg_pid=$ffmpeg_pid launcher_pid=$launcher_pid" ; logmsg
+		if [ "$$" == "$launcher_pid" ] ; then
+			msg="Killing my ffmpeg." ; logmsg
+			kill $ffmpeg_pid
+			msg="rc=$?" ; logmsg
+		else
+			msg="Not my ffmpeg." ; logmsg
+		fi
+	done <$tmpfile
+	rm $tmpfile
 }
 
 
@@ -170,7 +196,7 @@ kill_all_clones
 
 
 # Kill any languishing instances of ffmpeg.
-kill_all_ffmpeg
+kill_all_ffmpegs
 
 
 # Calculate the total playing time of the MP3 file.
@@ -201,6 +227,7 @@ msg="date_stop=${date_stop}" ; logmsg
 # Check repeatedly that ffmpeg is running.
 # Restart ffmpeg if it dies, starting from the appropriate offset.
 #-----------------------------------------------------------------------
+
 while (( ${date_stop} > ${date_now} )); do
     secs_elapsed=$(( ${date_now} - ${date_start} ))
     secs_remaining=$(( ${date_stop} - ${date_now} ))
@@ -235,8 +262,8 @@ while (( ${date_stop} > ${date_now} )); do
 done
 
 
-# Kill any languishing instances of ffmpeg.
-#kill_all_ffmpeg
+# Kill any languishing instances of ffmpeg STARTED BY THIS SCRIPT ONLY.
+kill_my_ffmpegs
 
 
  msg="Exit. Elapsed time=${secs_elapsed}s." ; logmsg
