@@ -206,7 +206,7 @@ while (( ${date_stop} > ${date_now} )); do
     secs_remaining=$(( ${date_stop} - ${date_now} ))
 
     if (( ${secs_remaining} > 7)); then
-        seek_secs=${sleep_secs_default}
+        sleep_secs=${sleep_secs_default}
 
         msg="Checking all instances of ffmpeg..." ; logmsg
         ps -ef | grep "ffmpeg -re" | grep -v grep
@@ -224,11 +224,11 @@ while (( ${date_stop} > ${date_now} )); do
         fi
     else
         # Do not try to restart ffmpeg this close to the end.
-        seek_secs=$((${secs_remaining}+7))
+        sleep_secs=$((${secs_remaining}+7))
     fi
 
-    msg="Time elapsed=${secs_elapsed}s. Time remaining=${secs_remaining}s. Sleeping for ${seek_secs}s." ; logmsg
-    sleep ${seek_secs}
+    msg="Time elapsed=${secs_elapsed}s. Time remaining=${secs_remaining}s. Sleeping for ${sleep_secs}s." ; logmsg
+    sleep ${sleep_secs}
 
     date_now=`date +%s`
     ### msg="date_now=${date_now} date_stop=${date_stop}" ; logmsg
@@ -236,7 +236,7 @@ done
 
 
 # Kill any languishing instances of ffmpeg.
-kill_all_ffmpeg
+#kill_all_ffmpeg
 
 
  msg="Exit. Elapsed time=${secs_elapsed}s." ; logmsg
