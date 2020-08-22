@@ -64,8 +64,7 @@ verify_vars()
         fi
     done
     if [[ ! -z "${EXIT_ERROR}" ]] ; then
-        msg="EXIT. ERROR. One or more variables do not exist." ; logmsg
-        exit 9
+        msg="EXIT. ERROR. One or more variables do not exist." ; exitmsg
     else
         msg="Ok. All required variables exist." ; logmsg
     fi
@@ -131,6 +130,69 @@ kill_my_ffmpegs()
 }
 
 
+get_ffmpeg_stats_from_nohup()
+{
+    srcfile="nohup.out"
+    tmpfile1="noh1.tmp"
+    tmpfile2="noh2.tmp"
+
+    # Ensure file exists
+    if [ ! -f "$srcfile" ]; then
+        msg="Warning: $srcfile does not exist."; logmsg
+        ffmpeg_stats="<ffmpeg_stats undefined>"
+        return
+    fi
+
+    # Extract the last 'line' from nohup.out
+    tail -1 $srcfile > $tmpfile1
+    #hexdump -C $tmpfile1 # for debug only
+
+    # Translate all carriage return (0x0D) characters to line feeds (0x0A)
+    # so that we can parse out the last line.
+    cat $tmpfile1 | tr '\r' '\n' > $tmpfile2
+
+    # Now get the last line of that.
+    ffmpeg_stats=`tail -1 $tmpfile2`
+
+    # Replace all equals-space equals equals.
+    while [[ $ffmpeg_stats == *"= "* ]]; do
+        ffmpeg_stats=${ffmpeg_stats//= /=}
+    done
+
+    rm -f $tmpfile1
+    rm -f $tmpfile2
+}
+
+
+create_html_file()
+{
+    # Writes the most recent entries from the log file into the html file
+    # for browsing convenience.
+    htmlfile="/var/www/html/ffmpeg.html"
+    htmltitle="BMIR MP3 Uploader Status"
+
+    # Write HTML.
+    echo "<html><meta http-equiv=\"refresh\" content=\"7\">" > $htmlfile
+    echo "<body>" >> $htmlfile
+    echo "<title>$htmltitle</title>" >> $htmlfile
+    echo "<h3>$htmltitle</H3>" >> $htmlfile
+    echo "<a href=#bottom>Jump to bottom of file</a>" >> $htmlfile
+    echo "<pre>" >> $htmlfile
+
+    tail -345 $logfile >> $htmlfile
+
+    echo "<h2 id="bottom">Bottom-of-File</h2>" >> $htmlfile
+    echo "</pre></body></html>" >> $htmlfile
+}
+
+
+exitmsg()
+{
+	logmsg
+    create_html_file
+	exit 9
+}
+
 #- - - - - - - - -
 # Here we go.
 #- - - - - - - - -
@@ -139,15 +201,13 @@ delim0
 # Ensure non-root
 msg="Checking for non-root user." ; logmsg
 if [[ $EUID -eq 0 ]]; then
-   msg="INVOCATION ERROR: This script must be run as a non-root user." ; logmsg
-   exit 1
+   msg="INVOCATION ERROR: This script must be run as a non-root user." ; exitmsg
 fi
 
 
 # Checking parameter count..."
 if [ $# -ne 1 ] ; then
-    msg="USER INVOCATION ERROR: Wrong number of parameters. Enter ./launch.ffmpeg.with.restart.sh <MP3_FILE_NAME>" ; logmsg
-    exit 9
+    msg="USER INVOCATION ERROR: Wrong number of parameters. Enter ./launch.ffmpeg.with.restart.sh <MP3_FILE_NAME>" ; exitmsg
 fi
 
 
@@ -165,8 +225,7 @@ msg="Checking that MP3 directory exists." ; logmsg
 ls ${MP3_DIR}
 rc=$?
 if [ 0 != ${rc} ] ; then
-	msg="INVOCATION ERROR: MP3 file directory ${MP3_DIR} does not exist." ; logmsg
-	exit 1
+	msg="INVOCATION ERROR: MP3 file directory ${MP3_DIR} does not exist." ; exitmsg
 fi
 msg="OK. MP3 directory exists: ${MP3_DIR}" ; logmsg
 
@@ -176,8 +235,7 @@ msg="Checking that MP3 file exists." ; logmsg
 ls ${MP3_DIR}/${MP3_FILE}
 rc=$?
 if [ 0 != ${rc} ] ; then
-        msg="INVOCATION ERROR: MP3 file does not exist: ${MP3_DIR}/${MP3_FILE}" ; logmsg
-        exit 1
+        msg="INVOCATION ERROR: MP3 file does not exist: ${MP3_DIR}/${MP3_FILE}" ; exitmsg
 fi
 msg="OK. MP3 file exists: ${MP3_FILE}" ; logmsg
 
@@ -186,8 +244,7 @@ msg="OK. MP3 file exists: ${MP3_FILE}" ; logmsg
 which mp3info
 rc=$?
 if [ 0 != ${rc} ] ; then
-    msg="ENVIRONMENT ERROR: mp3info is not installed or is not executable in path." ; logmsg
-    exit 1
+    msg="ENVIRONMENT ERROR: mp3info is not installed or is not executable in path." ; exitmsg
 fi
 
 
@@ -255,6 +312,10 @@ while (( ${date_stop} > ${date_now} )); do
     fi
 
     msg="Time elapsed=${secs_elapsed}s. Time remaining=${secs_remaining}s. Sleeping for ${sleep_secs}s." ; logmsg
+    get_ffmpeg_stats_from_nohup
+    msg="ffmpeg: $ffmpeg_stats" ; logmsg
+    create_html_file
+
     sleep ${sleep_secs}
 
     date_now=`date +%s`
@@ -267,3 +328,4 @@ kill_my_ffmpegs
 
 
  msg="Exit. Elapsed time=${secs_elapsed}s." ; logmsg
+ create_html_file
