@@ -16,12 +16,23 @@
 # Caution: Be sure schedule invocations do not overlap.
 #   If they do overlap, the latest schedule will win.
 #
+# Monitoring: For convenience, the forever-loop in this script does two things:
+# - Ensures ffmpeg is running and retsarts if necessary
+# - Scrapes the latest ffmpeg stats from nohup.out and appends info to an
+#     html file for viewing through an apache2 server: /var/www/html/ffmpeg.html
+#
 # Prereqs:
+#       - This script assumes a non-root user 'vmadmin' exists.
 #       - Set all environment variables as checked in verify_vars().
 #       - Install mp3info
+#       - Install apache2 to monitor stats conveniently.
+#           -- Create /var/www/html/ffmpeg.html and chmod/chgrp to your user.
+#           -- This script overwrites ffmpg.html periodically.
 #
 # Invocation:
 #       ./launch.ffmpeg.with.restart.sh <MP3_FILE_NAME>
+# or from cron
+#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp
 #
 # Note: Run this as a non-root user.
 #
