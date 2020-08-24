@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#TODO: Rename directory 'common' to 'streamripper'
-
 #TODO: ALSO: Rename streamripper.archiver.sh
 
 
@@ -28,8 +26,12 @@
 #        create_sudo_user
 #        setup_archiver_bmir_test
 #        setup_monitor_bmir_test
-
+#
 # TODO: Add echo 1 to apd-get update to accept the maintainers menu.lst
+#
+# TODO: Automate creation of symbolic links for apache2:
+#       ln -s /home/vmadmin/bmir-monitor bmir-monitor
+#       ln -s /home/vmadmin/bmir-streamripper bmir
 #
 # AD 2020-0805-0730 Created
 # Copyright BMIR 2020
@@ -292,15 +294,15 @@ prv_setup_archiver_common()  # Helper function; not intended to be called extern
         ### echo "${FILE_NAME}"
 
         echo "Ok. Verifying file exists: ${FILE_NAME}"
-        if [ -f "common/${FILE_NAME}" ] ; then
-            echo "Ok. common/${FILE_NAME} exists."
+        if [ -f "streamripper/${FILE_NAME}" ] ; then
+            echo "Ok. streamripper/${FILE_NAME} exists."
         else
-            echo "EXIT USER ERROR: File does not exist: common/${FILE_NAME}"
+            echo "EXIT USER ERROR: File does not exist: streamripper/${FILE_NAME}"
             exit 9
         fi
 
         echo "Ok. Copying file to local directory."
-        cp common/${FILE_NAME} .
+        cp streamripper/${FILE_NAME} .
         rc=$?
         if [ 0 != ${rc} ] ; then
         	echo "EXIT ERROR copying file locally: ${FILE_NAME}."
@@ -337,21 +339,19 @@ prv_setup_archiver_common()  # Helper function; not intended to be called extern
             fi
         done
 
-        echo "Ok. Copying file to VM..."
+        echo "Ok. Renaming and copying file to VM..."
         USR=${USER_NAME}
         SRC_FILE="${FILE_NAME}"
-        # Special handling to rename the service file.
-        if [ "streamripper.service" == ${FILE_NAME} ] ; then
-            DST_FILE="/home/${USR}/${SERVICE_PREFIX}-${FILE_NAME}"
-        else
-            DST_FILE="/home/${USR}/${FILE_NAME}"
-        fi
+        DST_FILE="/home/${USR}/${SERVICE_PREFIX}-${FILE_NAME}"
         rpush
+
     done
 
     echo "Ok. Setting up and starting streamripper service..."
     USR="${USER_NAME}"
-    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S ./setup.streamripper.service.sh" ; rexec
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S ./${SERVICE_PREFIX}-setup.streamripper.service.sh" ; rexec
+
+
 
     # Todo: Verify the service is running?
 }
