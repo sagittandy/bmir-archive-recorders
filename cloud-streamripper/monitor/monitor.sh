@@ -178,14 +178,14 @@ echo "<H3>Summary</H3>" >> ${OUTFILE}
 echo "Last Updated: ${PLACEHOLDER_DATE_NOW_VALUE}<br>" >> ${OUTFILE}
 echo "Epoch Seconds: ${PLACEHOLDER_EPOCH_SECS_VALUE}<br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AVAIL_COLOR}\"><b>Available Memory: ${PLACEHOLDER_AVAIL_VALUE} MB</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
+#echo "<span style=\"background-color: ${PLACEHOLDER_SWAP_COLOR}\"><b>Swap File Size: ${PLACEHOLDER_SWAP_VALUE} KB</b></span><br>" >> ${OUTFILE}
 #echo "<span style=\"background-color: ${PLACEHOLDER_ICECAST_COLOR}\"><b>Icecast Process: ${PLACEHOLDER_ICECAST_VALUE}</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_STREAMRIPPER_COLOR}\"><b>Streamripper Process: ${PLACEHOLDER_STREAMRIPPER_VALUE}</b></span><br>" >> ${OUTFILE}
 #echo "<span style=\"background-color: ${PLACEHOLDER_RX_DATA_COLOR}\"><b>Received Data: ${PLACEHOLDER_RX_DATA_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_FILESYSTEM_COLOR}\"><b>Filesystem Growth: ${PLACEHOLDER_FILESYSTEM_VALUE} KB/minute</b></span><br>" >> ${OUTFILE}
 echo "<span style=\"background-color: ${PLACEHOLDER_AMPLITUDE_COLOR}\"><b>RMS Amplitude: ${PLACEHOLDER_AMPLITUDE_VALUE}</b></span><br>" >> ${OUTFILE}
 #echo "<span style=\"background-color: ${PLACEHOLDER_BUFF_CACHE_COLOR}\"><b>Buffer/Cache Memory Size: ${PLACEHOLDER_BUFF_CACHE_VALUE} Kb</b></span><br>" >> ${OUTFILE}
-echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>MP3 File Counts: Studio=${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE} Cloud=${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE} </b></span><br>" >> ${OUTFILE}
+#echo "<span style=\"background-color: ${PLACEHOLDER_FILE_COUNT_COLOR}\"><b>MP3 File Counts: Studio=${PLACEHOLDER_FILE_COUNT_STUDIO_VALUE} Cloud=${PLACEHOLDER_FILE_COUNT_CLOUD_VALUE} </b></span><br>" >> ${OUTFILE}
 
 echo "<H3>Files</H3>" >> ${OUTFILE}
 echo "<PRE>" >> ${OUTFILE}
