@@ -147,6 +147,10 @@ export HTML_GREEN="#00FF00"
 export HTML_YELLOW="#FFFF00"
 export HTML_RED="#FA8072"  # Salmon
 
+# Assemble the URL of this monitor's folder, assuming the first IP is the real one.
+hip=`hostname -I | cut -d " " -f1`
+monitor_url="http://${hip}/${SERVICE_NAME}/"
+
 # Ensure non-root
 ### echo ${DELIMITER}
 if [[ $EUID -eq 0 ]]; then
@@ -304,7 +308,7 @@ sed -i "s:${PLACEHOLDER_STREAMRIPPER_VALUE}:${STREAMRIPPER_VALUE}:g" ${OUTFILE}
 if [ "Running" == "${STREAMRIPPER_VALUE}" ] ; then
 	if [ -f ${STREAMRIPPER_OUTAGE_FILE} ] ; then
 		echo "Streamripper is restored. Removing outage file."
-        MSG_BODY="OK Streamripper restored: ${SERVICE_PREFIX}"
+        MSG_BODY="OK ${SERVICE_PREFIX}: Streamripper running ${monitor_url}"
 		send_sms_twilio
 		rm ${STREAMRIPPER_OUTAGE_FILE}
 	else
@@ -315,7 +319,7 @@ else # Not running.
 		echo "Streamripper outage continues and SMS already sent. Doing nothing."
 	else
 		echo "Streamripper stopped. Sending SMS."
-		MSG_BODY="ERR Streamripper stopped: ${SERVICE_PREFIX}"
+		MSG_BODY="ERR ${SERVICE_PREFIX}: Streamripper stopped ${monitor_url}"
 		send_sms_twilio
 		touch ${STREAMRIPPER_OUTAGE_FILE}
 	fi
@@ -375,16 +379,15 @@ SWAP_NOW=`top -bn1 | grep "KiB Swap" | awk '{print $7}'`
 #tail -9 swap.txt >> ${OUTFILE}
 
 # Write the swap file usage number into the top of the HTML file.
-if [ ${SWAP_NOW} -gt 2048 ] ; then
+if [ ${SWAP_NOW} > 2048 ] ; then
         SWAP_HTML_COLOR="${HTML_RED}"
-elif [ ${SWAP_NOW} -gt 0 ] ; then
+elif [ ${SWAP_NOW} > 0 ] ; then
         SWAP_HTML_COLOR="${HTML_YELLOW}"
 else
         SWAP_HTML_COLOR="${HTML_GREEN}"
 fi
 sed -i "s:${PLACEHOLDER_SWAP_COLOR}:${SWAP_HTML_COLOR}:g" ${OUTFILE}
 sed -i "s:${PLACEHOLDER_SWAP_VALUE}:${SWAP_NOW}:g" ${OUTFILE}
-
 
 
 
@@ -472,10 +475,11 @@ do
 		continue
 	fi
 	### echo "Processing value..."
+	DISK_USAGE_DELTA_PREV=${DISK_USAGE_DELTA}
 	DISK_USAGE_DELTA=`echo "${DISK_USAGE_INT}-${DISK_USAGE_LAST}"|bc`
 	DISK_USAGE_LAST=${DISK_USAGE_INT}
 	### echo "Delta: DISK_USAGE_DELTA=${DISK_USAGE_DELTA}"
-    DISK_USAGE_UNCLIPPED=${DISK_USAGE_DELTA}
+	DISK_USAGE_UNCLIPPED=${DISK_USAGE_DELTA}
 	if [ "${DISK_USAGE_DELTA}" -gt "${DISK_USAGE_MAX}" ] ; then
 		### echo "Clipping at DISK_USAGE_MAX ${DISK_USAGE_MAX}"
 		DISK_USAGE_DELTA=${DISK_USAGE_MAX}
@@ -498,11 +502,14 @@ do
 	echo "${SPLAT_STRING} ${DISK_USAGE_UNCLIPPED}" >> ${OUTFILE}
 done < "${DISK_USAGE_FILE}"
 
+# Calculate disk growth over the last two minutes.
+DISK_USAGE_DELTA_2MIN=`echo "${DISK_USAGE_UNCLIPPED}+${DISK_USAGE_DELTA_PREV}"|bc`
+#echo "DISK_USAGE_DELTA_2MIN=${DISK_USAGE_DELTA_2MIN}"
 
 # Write the last disk usage number into the top of the HTML file.
 if [ ${DISK_USAGE_DELTA} -ge 900 ] ; then
 	FILESYSTEM_HTML_COLOR="${HTML_GREEN}"
-elif [ ${DISK_USAGE_DELTA} -ge 600 ] ; then
+elif [ ${DISK_USAGE_DELTA_2MIN} -ge 1700 ] ; then
 	FILESYSTEM_HTML_COLOR="${HTML_YELLOW}"
 else
 	FILESYSTEM_HTML_COLOR="${HTML_RED}"
@@ -518,14 +525,14 @@ if [ "${FILESYSTEM_HTML_COLOR}" == "${HTML_RED}" ] ; then
 		echo "Filesystem outage continues and SMS already sent. Doing nothing."
 	else
 		echo "Filesystem stopped growing. Sending SMS."
-		MSG_BODY="ERR Filesystem stopped growing: ${SERVICE_PREFIX}"
+		MSG_BODY="ERR ${SERVICE_PREFIX}: Filesystem not growing ${monitor_url}"
 		send_sms_twilio
 		touch ${FILESYSTEM_OUTAGE_FILE}
 	fi
 else # Growing
 	if [ -f ${FILESYSTEM_OUTAGE_FILE} ] ; then
 		echo "Filesystem is growing. Removing outage file."
-        MSG_BODY="OK Filesystem is growing: ${SERVICE_PREFIX}"
+        MSG_BODY="OK ${SERVICE_PREFIX}: Filesystem is growing ${monitor_url}"
 		send_sms_twilio
 		rm ${FILESYSTEM_OUTAGE_FILE}
 	else
@@ -719,3 +726,21 @@ sed -i "s:${PLACEHOLDER_CURRENT_RC_VALUE}:${rc}:g" ${OUTFILE}
 #MP3_FILE=`awk '{ printf $11; }' ERS_TXT_FILE`
 #tail -c 64000 /media/usb/bmir/${DATE}/${MP3_FILE}.mp3 > ${CURRENT_MP3_FILE}
 #scp -o "StrictHostKeyChecking=no" ${CURRENT_MP3_FILE} ${REMOTE_USER}@${REMOTE_SERVER}:${REMOTE_FOLDER}/
+
+# Experiment to identify processes which get backlogged intermittently.
+toplogfile="top.log"
+toptmpfile="top.tmp"
+# Records the 'top' command from the last few hours.
+toplog()
+{
+        echo $DELIMITER >> $toplogfile
+        date >> $toplogfile
+        top -bn1 > $toptmpfile
+        head -16 $toptmpfile >> $toplogfile
+        rm $toptmpfile
+
+        tail -4096 $toplogfile > $toptmpfile
+        rm $toplogfile
+        mv $toptmpfile $toplogfile
+}
+toplog
