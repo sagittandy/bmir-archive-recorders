@@ -6,7 +6,9 @@ cloud-streamripper/autodj/sandbox/
 cloud-streamripper/monitor/sandbox/
 cloud-streamripper/monitor/sandbox/
 cloud-streamripper/mp3/sandbox/
-cloud-streamripper/*streamripper*
+cloud-streamripper/*monitor.*
+cloud-streamripper/*streamripper.*
+cloud-streamripper/*.log
 monitor/sandbox/
 setenv*sh
 */setenv*sh

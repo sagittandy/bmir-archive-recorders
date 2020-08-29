@@ -35,7 +35,7 @@ Environment="SERVICE_NAME=<SERVICE_NAME>"
 Environment="SERVICE_DEST_PATH=<SERVICE_DEST_PATH>"
 Environment="SERVICE_PREFIX=<SERVICE_PREFIX>"
 Environment="SERVICE_RADIOSTREAM=<SERVICE_RADIOSTREAM>"
-ExecStart=/home/<USER_NAME>/streamripper.archiver.sh
+ExecStart=/home/<USER_NAME>/<SERVICE_NAME>.archiver.sh
 ExecReload=/bin/kill -HUP $MAINPID
 # Restart service after several seconds if service crashes
 Restart=always

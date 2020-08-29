@@ -28,7 +28,7 @@ echo "Confirmed user root."
 
 echo ${DELIMITER}
 echo "Ensuring required prereq files..."
-for FILENAME in ${SERVICE}.service streamripper.archiver.sh
+for FILENAME in ${SERVICE}.service ${SERVICE}.archiver.sh
 do
 	ls ${FILENAME}
 	rc=$?
