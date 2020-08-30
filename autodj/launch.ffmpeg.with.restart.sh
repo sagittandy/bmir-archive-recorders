@@ -311,7 +311,7 @@ while (( ${date_stop} > ${date_now} )); do
             seek_secs=${secs_elapsed}
             delim1
             msg="FFMPEG IS NOT running. Starting ffmpeg at ${seek_secs}s." ; logmsg
-            nohup ffmpeg -re -ss ${seek_secs} -i ${MP3_DIR}/${MP3_FILE} -f mp3 icecast://${FFMPEG_USERNAME}:${FFMPEG_PASSWORD}@${FFMPEG_HOST}:${FFMPEG_PORT}/${FFMPEG_MOUNT} > $nohup_out_file 2>&1 &
+            nohup ffmpeg -re -ss ${seek_secs} -i ${MP3_DIR}/${MP3_FILE} -f mp3 -content_type audio/mpeg icecast://${FFMPEG_USERNAME}:${FFMPEG_PASSWORD}@${FFMPEG_HOST}:${FFMPEG_PORT}/${FFMPEG_MOUNT} > $nohup_out_file 2>&1 &
             sleep 1
             ### ps -ef | grep "ffmpeg -re" | grep -v grep # For debug only
             delim1
