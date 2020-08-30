@@ -163,12 +163,13 @@ fi
 # Initial cleanup
 rm ${OUTFILE}
 
+SERVICE_DIR_UPPER=`echo "$SERVICE_DIR" | tr '[:lower:]' '[:upper:]'`
 
 # HTML start
 echo "<HTML><meta http-equiv=\"refresh\" content=\"30\">" >> ${OUTFILE}
 echo "<BODY>" >> ${OUTFILE}
-echo "<TITLE>BMIR Studio Archiver System Status</TITLE>" >> ${OUTFILE}
-echo "<H3>BMIR Archiver System Status</H3>" >> ${OUTFILE}
+echo "<TITLE>${SERVICE_DIR_UPPER} Studio Archiver System Status</TITLE>" >> ${OUTFILE}
+echo "<H3>${SERVICE_DIR_UPPER} Archiver System Status</H3>" >> ${OUTFILE}
 echo "<a href=\"./\">Parent Directory</a><br>" >> ${OUTFILE}
 echo "<a href=\"${OUTFILE}\">${OUTFILE}</a><br>" >> ${OUTFILE}
 echo "<a href=\"${CURRENT_MP3_FILE}\">${CURRENT_MP3_FILE}</a> rc=${PLACEHOLDER_CURRENT_RC_VALUE}" >> ${OUTFILE}
