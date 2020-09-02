@@ -27,6 +27,22 @@
 #        setup_archiver_bmir_test
 #        setup_monitor_bmir_test
 #
+# To set up a new server with S3FS, issue the following
+#   . creds/setenv.sudo.user.sh
+#   . creds/setenv.s3fs.<S3FS_NAME>.sh
+#   ./setup.dovm.sh <IP> <PRIVATE_SSH_KEY_FILENAME>
+#        secure_vm
+#        create_sudo_user
+#        setup_s3fs
+#        mount_s3fs
+#   and optionally
+#       unmount_s3fs
+#
+#
+#
+#
+#
+#
 # TODO: Add echo 1 to apd-get update to accept the maintainers menu.lst
 #
 # TODO: Automate creation of symbolic links for apache2:
@@ -37,6 +53,7 @@
 # Copyright BMIR 2020
 #-----------------------------------------------------------------------
 export DELIMITER="-----------------------------------------------------"
+S3FS_MOUNT_ROOT="/s3"
 
 
 #-----------------------------------------------------------------------
@@ -44,9 +61,17 @@ export DELIMITER="-----------------------------------------------------"
 #-----------------------------------------------------------------------
 rexec()
 {
+    for VAR_NAME in USR CMD VM_IP
+    do
+        if [[ -z "${!VAR_NAME}" ]] ; then
+            echo "EXIT USER ERROR: Variable ${VAR_NAME} is not defined."
+            exit 9
+        fi
+    done
+
     echo ${DELIMITER}
     date
-	echo "Ok. Issuing remote command: ${CMD}"
+	echo "Ok. Issuing remote command as user '${USR}': ${CMD}"
     sleep 1
 	ssh -t -i ${VM_ROOT_KEYFILE} -o StrictHostKeyChecking=no ${USR}@${VM_IP} ${CMD}
     rc=$?
@@ -190,6 +215,13 @@ prv_install_package()
     CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S apt-get -y install ${PACKAGE_NAME}" ; rexec
     CMD="which ${PACKAGE_NAME}" ; rexec
     CMD="dpkg -l | grep ${PACKAGE_NAME}" ; rexec
+}
+
+
+install_s3fs()
+{
+    PACKAGE_NAME="s3fs"
+    prv_install_package
 }
 
 
@@ -534,6 +566,136 @@ setup_monitor_bmir()
 }
 
 
+set_s3fs_mount_folder()
+{
+    S3FS_MOUNT_FOLDER="${S3FS_MOUNT_ROOT}/${S3FS_NAME}"
+}
+
+
+set_s3fs_creds_file_name()
+{
+    S3FS_CREDS_FILE_NAME="/home/${USER_NAME}/.s3fs-${S3FS_NAME}-creds"
+}
+
+
+setup_s3fs()
+{
+    # Verify variables
+    for VAR_NAME in USER_NAME USER_PASSWORD S3FS_NAME S3FS_KEY S3FS_VALUE APACHE_UID APACHE_GID APACHE_USER
+    do
+        if [[ -z "${!VAR_NAME}" ]] ; then
+            echo "EXIT USER ERROR: Variable ${VAR_NAME} is not defined."
+            exit 9
+        fi
+    done
+
+    # Prompt the user to confirm which s3fs will be mounted.
+    echo "SETTING UP s3fs '${S3FS_NAME}' on VM '${VM_IP}'. Are you sure?"
+    read -p "Enter 'y' to proceed.  Ctrl-c to exit." -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Proceeding."
+    else
+        exit 0
+    fi
+
+    # Install s3fs
+    install_s3fs
+
+    # Verify the User ID and Group ID numbers which are running Apache2.
+    USR="${USER_NAME}"
+    CMD="grep ${APACHE_UID}:${APACHE_GID}:${APACHE_USER} /etc/passwd" ; rexec
+
+    # Enable non-root users to access the s3fs folder.
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S sed -i \"s:#user_allow_other:user_allow_other:g\" /etc/fuse.conf" ; rexec
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S cat /etc/fuse.conf" ; rexec
+
+    # Create credentials file for consumption by s3fs.
+    # For example, /home/vmadmin/.s3fs-creds
+    set_s3fs_creds_file_name
+    CMD="echo ${S3FS_KEY}:${S3FS_VALUE} > ${S3FS_CREDS_FILE_NAME}" ; rexec
+    CMD="cat ${S3FS_CREDS_FILE_NAME}" ; rexec
+    CMD="chmod 600 ${S3FS_CREDS_FILE_NAME}" ; rexec
+    CMD="ls -l ${S3FS_CREDS_FILE_NAME}" ; rexec
+
+    # Create target folder for s3fs mount.
+    # For example, /s3/bmir/
+    set_s3fs_mount_folder
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S mkdir -p ${S3FS_MOUNT_FOLDER}" ; rexec
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S chown -R ${APACHE_USER}:${APACHE_USER} ${S3FS_MOUNT_FOLDER}" ; rexec
+    CMD="ls -l ${S3FS_MOUNT_ROOT}" ; rexec
+    CMD="ls -l ${S3FS_MOUNT_FOLDER}" ; rexec
+}
+
+
+mount_s3fs()
+{
+    # TODO FUTURE:  CONVERT THIS TO SYSTEMD MOUNT
+
+    # Verify variables
+    for VAR_NAME in USER_NAME USER_PASSWORD S3FS_URL S3FS_NAME S3FS_KEY S3FS_VALUE APACHE_UID APACHE_GID APACHE_USER
+    do
+        if [[ -z "${!VAR_NAME}" ]] ; then
+            echo "EXIT USER ERROR: Variable ${VAR_NAME} is not defined."
+            exit 9
+        fi
+    done
+
+    # Assemble variables.
+    set_s3fs_mount_folder
+    set_s3fs_creds_file_name
+
+    # Prompt the user to confirm which s3fs will be mounted.
+    echo "MOUNTING s3fs '${S3FS_NAME}' to folder '${S3FS_MOUNT_FOLDER}' on VM '${VM_IP}'. Are you sure?"
+    read -p "Enter 'y' to proceed.  Ctrl-c to exit." -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Proceeding."
+    else
+        exit 0
+    fi
+
+    # Mount S3FS.
+    USR=${USER_NAME}
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S s3fs -d ${S3FS_NAME} ${S3FS_MOUNT_FOLDER} -o url=${S3FS_URL} -o use_cache=/tmp -o allow_other -o use_path_request_style -o uid=${APACHE_UID} -o gid=${APACHE_GID} -o passwd_file=${S3FS_CREDS_FILE_NAME}" ; rexec
+    CMD="ls -l ${S3FS_MOUNT_FOLDER}" ; rexec
+}
+
+
+unmount_s3fs()
+{
+    # Verify variables
+    for VAR_NAME in USER_NAME USER_PASSWORD S3FS_URL S3FS_NAME S3FS_KEY S3FS_VALUE APACHE_UID APACHE_GID APACHE_USER
+    do
+        if [[ -z "${!VAR_NAME}" ]] ; then
+            echo "EXIT USER ERROR: Variable ${VAR_NAME} is not defined."
+            exit 9
+        fi
+    done
+
+    # Assemble variables.
+    set_s3fs_mount_folder
+    set_s3fs_creds_file_name
+
+    # Prompt the user to confirm which s3fs will be unmounted.
+    echo "UNMOUNTING s3fs '${S3FS_NAME}' folder '${S3FS_MOUNT_FOLDER}' on VM '${VM_IP}'. Are you sure?"
+    read -p "Enter 'y' to proceed.  Ctrl-c to exit." -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Proceeding."
+    else
+        exit 0
+    fi
+
+    # Unmount s3fs.  Example: sudo umount -l /s3/bmir
+    USR=${USER_NAME}
+    CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S umount -l ${S3FS_MOUNT_FOLDER}" ; rexec
+    CMD="ls -l ${S3FS_MOUNT_ROOT}" ; rexec
+}
+
 
 #-----------------------------------------------------------------------
 # The script starts here...
@@ -577,7 +739,8 @@ echo "ACTION=${ACTION}"
 
 #if [ "prv_setup_archiver_common" == ${ACTION} ] ; then  # FOR DEBUG ONLY
 #      prv_setup_archiver_common
-
+#if [ "prv_setup_monitor_common" == ${ACTION} ] ; then  # FOR DEBUG ONLY
+#      prv_setup_monitor_common
 if [ "hostname" == ${ACTION} ] ; then
       hostname
 elif [ "reboot" == ${ACTION} ] ; then
@@ -598,6 +761,8 @@ elif [ "install_liquidsoap" == ${ACTION} ] ; then
         install_liquidsoap
 elif [ "install_ffmpeg" == ${ACTION} ] ; then
         install_ffmpeg
+elif [ "install_s3fs" == ${ACTION} ] ; then
+        install_s3fs
 elif [ "install_mp3info" == ${ACTION} ] ; then
         install_mp3info
 elif [ "create_user" == ${ACTION} ] ; then
@@ -608,6 +773,15 @@ elif [ "copy_ssh_keys" == ${ACTION} ] ; then
         copy_ssh_keys
 elif [ "disable_root_ssh" == ${ACTION} ] ; then
         disable_root_ssh
+
+elif [ "setup_s3fs" == ${ACTION} ] ; then
+        setup_s3fs
+elif [ "mount_s3fs" == ${ACTION} ] ; then
+        mount_s3fs
+elif [ "unmount_s3fs" == ${ACTION} ] ; then
+        unmount_s3fs
+elif [ "umount_s3fs" == ${ACTION} ] ; then
+        unmount_s3fs
 
 elif [ "secure_vm" == ${ACTION} ] ; then
         secure_vm
