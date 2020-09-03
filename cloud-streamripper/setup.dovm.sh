@@ -20,12 +20,15 @@
 # Environment Variables
 #   To create new user, export USER_NAME and USER_PASSWORD
 #
-# To set up a complete arhiver, for example bmir-test, issue the following
-#   ./setup.dovm.sh <IP> <PRIVATE_SSH_KEY_FILENAME>
+# To set up a complete arhiver, for example bmir, issue the following
+#   . creds/setenv.sudo.user.sh
+#   . creds/setenv.twilio.<ACCOUNT>.sh
+#   . creds/setenv.s3fs.bmir.sh
+#   ./setup.dovm.sh <IP> <PRIVATE_SSH_KEY_FILENAME> <ACTION>, where action=
 #        secure_vm
 #        create_sudo_user
-#        setup_archiver_bmir_test
-#        setup_monitor_bmir_test
+#        setup_archiver_bmir
+#        setup_monitor_bmir
 #
 # To set up a new server with S3FS, issue the following
 #   . creds/setenv.sudo.user.sh
