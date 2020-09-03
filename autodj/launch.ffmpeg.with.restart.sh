@@ -316,7 +316,7 @@ while (( ${date_stop} > ${date_now} )); do
             ### ps -ef | grep "ffmpeg -re" | grep -v grep # For debug only
             delim1
         else
-            msg="Ok. ffmpeg is running." ; logmsg
+            msg="Ok. ffmpeg is running. mp3_file=${MP3_FILE}" ; logmsg
         fi
     else
         # Do not try to restart ffmpeg this close to the end.
