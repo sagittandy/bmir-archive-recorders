@@ -36,8 +36,8 @@
 #       ./launch.ffmpeg.new.sh testclip-isabel.mp3 "2020-09-05 03:42:00"
 #       ./launch.ffmpeg.new.sh testclip-isabel.mp3 now
 # or from cron
-#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp "2020-08-23 18:12:00"
-#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp now
+#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp3 "2020-08-23 18:12:00"
+#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp3 now
 #
 # Note: Run this as a non-root user.
 #
