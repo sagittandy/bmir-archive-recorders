@@ -31,9 +31,13 @@
 #
 # Invocation:
 #       ./launch.ffmpeg.with.restart.sh <MP3_FILE_NAME> <SCHEDULED_START_TIME>
-#           where <SCHEDULED_START_TIME> is an iso-8601 compliant date string
+#           where <SCHEDULED_START_TIME> is an iso-8601 compliant date string or 'now'
+# Examples:
+#       ./launch.ffmpeg.new.sh testclip-isabel.mp3 "2020-09-05 03:42:00"
+#       ./launch.ffmpeg.new.sh testclip-isabel.mp3 now
 # or from cron
 #       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp "2020-08-23 18:12:00"
+#       12 18 23 8 * . /home/vmadmin/setenv.ffmpeg.bmirtest.sh ; /home/vmadmin/launch.ffmpeg.with.restart.sh testclip.mp now
 #
 # Note: Run this as a non-root user.
 #
@@ -300,9 +304,15 @@ msg="mp3_length_secs=${mp3_length_secs}s. sleep_secs_default=${sleep_secs_defaul
 
 
 # Calculate scheduled start time, in seconds since the epoch.
-epoch_date_string=${SCHEDULED_START_TIME}
-set_epoch_secs
-date_schedule_start=${epoch_date_secs}
+date_now=`date +%s`
+if [[ "now" -eq "${SCHEDULED_START_TIME}" ]] ; then
+    date_schedule_start=${date_now}
+    msg="Ok. Setting scheduled start to now." ; logmsg
+else
+    epoch_date_string=${SCHEDULED_START_TIME}
+    set_epoch_secs
+    date_schedule_start=${epoch_date_secs}
+fi
 msg="date_schedule_start=${date_schedule_start}" ; logmsg
 
 
@@ -312,7 +322,6 @@ msg="date_schedule_stop=${date_schedule_stop}" ; logmsg
 
 
 # Sleep and wait if this script has started before scheduled start time.
-date_now=`date +%s`
 if (( ${date_schedule_start} > ${date_now} )); then
     sleep_secs=$(( ${date_schedule_start} - ${date_now} ))
     msg="Ok. Scheduled start time is in the future. Sleeping for ${sleep_secs}s..." ; logmsg
@@ -326,7 +335,7 @@ date_now=`date +%s`
 if (( ${date_now} > ${date_schedule_stop} )); then
     msg="EXIT: ERROR: Scheduled stop time is in the past!" ; exitmsg
 else
-    msg="Ok. Scheduled stop time is in the future. Proceeding..." ; logmsg
+    msg="Ok. Scheduled stop time is not in the past. Proceeding..." ; logmsg
 fi
 
 
