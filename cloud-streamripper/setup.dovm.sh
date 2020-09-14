@@ -40,7 +40,8 @@
 #        mount_s3fs
 #   and optionally
 #       unmount_s3fs
-#
+#   and optionally
+#       install_apache2
 #
 #
 #
@@ -216,10 +217,28 @@ prv_install_package()
     echo "Ok. Installing ${PACKAGE_NAME}..."
     USR="${USER_NAME}"
     CMD="echo -e \"${USER_PASSWORD}\n\" | sudo -S apt-get -y install ${PACKAGE_NAME}" ; rexec
-    CMD="which ${PACKAGE_NAME}" ; rexec
+    ### CMD="which ${PACKAGE_NAME}" ; rexec  Commented-out because all installables are executable.
     CMD="dpkg -l | grep ${PACKAGE_NAME}" ; rexec
 }
 
+
+install_apache2() {
+
+    # Prompt the user to respond to apt-get installer options.
+    echo "IMPORTANT: Please manually select 'No Configuration' when prompted by apt-get."
+    read -p "Enter 'y' to proceed.  Ctrl-c to exit." -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Proceeding."
+    else
+        exit 0
+    fi
+
+    PACKAGE_NAME="apache2" ; prv_install_package
+    PACKAGE_NAME="libapache2-mod-security2" ; prv_install_package
+    PACKAGE_NAME="libapache2-mod-evasive" ; prv_install_package
+}
 
 install_s3fs()
 {
@@ -758,6 +777,8 @@ elif [ "set_timezone_uspt" == ${ACTION} ] ; then
         set_timezone_uspt
 elif [ "disable_misc_timers" == ${ACTION} ] ; then
         disable_misc_timers
+elif [ "install_apache2" == ${ACTION} ] ; then
+        install_apache2
 elif [ "install_streamripper" == ${ACTION} ] ; then
         install_streamripper
 elif [ "install_liquidsoap" == ${ACTION} ] ; then
