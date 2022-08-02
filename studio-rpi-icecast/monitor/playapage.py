@@ -15,8 +15,9 @@ Sample usage:
 	person = '9999'       # Receiver person's ID number
 	message = 'zzzz'      # Message body
 
-	pp = playapage.PlayaPage(username, password)
 	try:
+		pp = playapage.PlayaPage(username, password)
+
 		rsp = pp.list_people_uAPI()
 		print(rsp)
 		
