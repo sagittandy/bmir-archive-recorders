@@ -29,7 +29,7 @@ Sample usage:
 	except Exception as e:	
 		print(e)
 		
-AD 2022-0731-1154 Created
+AD 2022-0731-1154 Copyright BMIR 2022
 """
 import requests
 import sys
